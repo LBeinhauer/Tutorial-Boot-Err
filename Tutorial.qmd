@@ -1,0 +1,232 @@
+---
+title: "Tutorial"
+format: html
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+### Step 0 - Preparing Data
+
+
+```{r}
+# relevant libraries required for this script
+packages <- c("magrittr", "dplyr", "osfr", "here", "zip", "data.table", "metafor", "boot")
+
+# check, whether library already installed or not - install and load as needed:
+apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
+  
+  pkg_avail <- nzchar(system.file(package = x))   # check if library is installed on system
+  
+  if(pkg_avail){
+    require(x, character.only = TRUE)             # load the library, if already installed
+    
+  }else{
+    install.packages(x)                           # install the library, if missing
+    require(x, character.only = TRUE)             # load after installation
+  }
+})
+```
+
+```{r}
+library(here)
+
+dir.create(here("Data"), showWarnings = FALSE)
+dir.create(here("Data/Downloaded Data"), showWarnings = FALSE)
+
+
+# use osfr-package to download RRR10 data on the Mazar et al. / Srull et al. replications
+osfr::osf_retrieve_file("https://osf.io/fwnc2") %>% 
+  osfr::osf_download(path = here("Data/Downloaded Data/"), conflicts = "overwrite")
+# zip-file is stored at Downloaded Data
+
+# again, unzip the file and move it to the corresponding directory
+unzip(here("Data/Downloaded Data/Meta-Analysis_2018-07-09.zip"),
+      files = "Meta-Analysis/Results/raw_data_corrected_MAA.csv",
+      exdir = here("Data/Original Data/RRR10"),
+      junkpaths = T)
+```
+
+You can add options to executable code like this 
+
+```{r}
+# HEXACO Conscientiousness
+
+
+
+# Thankfully, for the RRR10 project, the data can be taken from a file directly, without the need of combination:
+pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/raw_data_corrected_MAA.csv")))
+
+# data <- data[which(data$age >= 18 & data$age <= 25),]
+# retain observations only for participants eligible for analysis
+pc_df <- pc_df[which(pc_df$inclusion == "inclusion both RRR" | pc_df$inclusion == "inclusion Mazar only"),] %>%
+  mutate(source = lab.name)
+
+# identify relevant labs for analsysis
+labs_in_paper <- c("Laine", "klein Selle & Rozmann", "Aczel", "Ferreira-Santos", "Meijer", "Loschelder", "Wick", "Suchotzki", 
+                   "Sutan", "Vanpaemel", "Verschuere", "Wiggins", "Gonzalez-Iraizoz", "Koppel", "Birt", "McCarthy", "Evans", 
+                   "Holzmeister", "Ozdogru")
+labs_in_data <- unique(pc_df$source)
+labs_in_data[8] <- "Gonzalez-Iraizoz"
+labs_in_data[16] <- "Ozdogru"
+
+# remove labs from data, which we do not need for analysis
+labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
+pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
+
+# include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
+pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
+
+# retain only those columns, which are needed for subsequent analysis.
+pc_df <- pc_df[,c(which(names(pc_df) %in% c("lab.name", "inclusion", "maz.prime.cond", "maz.cheat.cond", "source")),
+                  grep("^religious", names(pc_df)),
+                  grep("^fatigue", names(pc_df)),
+                  grep("^hex", names(pc_df)))]
+
+# recoding the hexaco items, that need recoding
+
+for(i in grep("^hex", names(pc_df))){
+  pc_df[,i] <- as.integer(pc_df[,i])
+}
+# these are the numbers of the items, that need recoding
+items_hex_recode <- c(30, 12, 60, 42, 24, 28, 53, 35, 41, 59, 28, 52, 10, 46, 9, 15, 57, 21, 26, 32, 14, 20, 44, 56, 1, 31, 49, 19, 55, 48)
+names_items_hex_recode <- paste0("hex", items_hex_recode) # pasting "hex" and number gives the column names
+
+names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") # adding _R for names of items, that are recoded
+pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] # recode items that need recoding
+
+#Conscientiousness
+items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) # items in Conscientiousness subscale
+names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) # did item need recoding?
+pc_hex_items_CO <- which(names(pc_df) %in% names_items_hex_CO) # select all items from Conscientiousness subscale, correctly coded
+
+pc_df <- pc_df[,c(names_items_hex_CO, "source")]
+
+pc_df <- na.omit(pc_df)
+
+labs <- unique(pc_df$source)
+```
+
+### Step 1 - estimating score reliability
+
+```{r}
+alpha_vec <- sapply(labs, FUN = function(lab){
+  
+  dat <- pc_df %>% 
+    filter(source == lab) %>% 
+    select(-"source")
+  
+  C <- cov(dat)
+  j <- dim(C)[1]
+  alpha <- (1 - sum(diag(C))/sum(C)) * (j/(j - 1))
+  
+  return(alpha)
+  
+})
+
+alpha_vec
+```
+
+### Step 2 - estimating error score variance
+
+```{r}
+
+var_X_vec <- sapply(labs, FUN = function(lab){
+  
+  dat <- pc_df %>% 
+    filter(source == lab) %>% 
+    select(-"source")
+  
+  var_X <- dat %>% 
+    rowMeans(.) %>% 
+    var(.)
+  
+  return(var_X)
+  
+})
+
+var_E_vec <- var_X_vec * (1-alpha_vec)
+
+var_E_vec
+
+```
+
+### Step 3 - construct Standard Errors using Bootstrapping
+
+```{r}
+
+ln_var_E_boot_func <- function(data, indices){
+  
+  dat_boot <- data[indices,]
+  
+  C <- cov(dat_boot)
+  j <- dim(C)[1]
+  alpha <- (1 - sum(diag(C))/sum(C)) * (j/(j - 1))
+  
+  var_X <- dat_boot %>% 
+    rowMeans(.) %>% 
+    var(.)
+  
+  var_E <- var_X * (1 - alpha)
+  
+  ln_var_E <- log(var_E)
+  
+  return(ln_var_E)
+  
+}
+
+
+ln_var_E_SE_vec <- sapply(labs, FUN = function(lab){
+  
+  dat <- pc_df %>% 
+    filter(source == lab) %>% 
+    select(-"source")
+  
+  boot_estimates <- boot::boot(dat, 
+                               statistic = ln_var_E_boot_func,
+                               R = 100)
+  
+  SE <- sd(boot_estimates$t)
+  
+  return(SE)
+  
+})
+
+ln_var_E_vec <- log(var_E_vec)
+
+ln_var_E_df <- data.frame(ln_var_E = ln_var_E_vec, 
+                          ln_var_E_SE = ln_var_E_SE_vec, 
+                          laboratory = labs, 
+                          row.names = NULL)
+
+ln_var_E_df
+```
+
+### Step 4 - meta-analysis of error score variance
+
+```{r}
+
+ln_var_E_rma <- metafor::rma(data = ln_var_E_df,
+                             yi = ln_var_E,
+                             sei = ln_var_E_SE)
+
+ln_var_E_rma
+
+```
+### step 5 - backtransforming estimates
+
+```{r}
+backtransform_var_mu <- function(rma_obj){
+  exp(rma_obj$b[1] + (.5*rma_obj$tau2))
+}
+
+backtransform_var_tau2 <- function(rma_obj){
+  (exp(rma_obj$tau2) - 1) * exp((2 * rma_obj$b[1]) + rma_obj$tau2)
+}
+
+backtransform_var_mu(ln_var_E_rma)
+
+backtransform_var_tau2(ln_var_E_rma) %>% 
+  sqrt(.)
+```
