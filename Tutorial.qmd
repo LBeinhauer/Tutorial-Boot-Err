@@ -1,14 +1,72 @@
 ---
 title: "Tutorial"
 format: html
+bibliography: bibliography/Boot-Err_Tutorial.bib
+csl: bibliography/apa-fullnote.csl
 ---
 
-## Quarto
+## Introduction
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+Measurements in different scientific disciplines. Across most to all scientific fields, precision is a crucial concept to describe an aspect of the quality of measurements derived from an instrument. In the social sciences, measurements typically take the form of scores derived from some kind of inventory, consisting of a number of items assessing at least one underlying construct, where participants either respond themselves or are evaluated by some third party. It is well known that, even if a single “true score” on a single construct exists for each measured individual, the observed score does not truly represent this “true score”. Instead, even though on average we might get it right, the observed score will always be off by some extent. The aforementioned precision described the degree to what extent the observed score is off from the “true score”.
+
+In the social sciences, this measurement precision is most often evaluated using score reliability. While different definitions and sub-categories of score reliability exist in parallel, in general, all parameters of score reliability attempt to describe the same ratio: a ratio of two variance parameters, one that attempts to describe the total variance in the observed scores and one that attempts to describe the variance in the true scores or the latent trait that we try to measure. In the context of Classical Test Theory (CTT), where an observed score $X$ is made up of the sum of true score $T$ and error score $E$, score reliability takes the form of $\rho_{xx’} = \frac{\sigma^2_T}{\sigma^2_X}$. In the context of structural equation or factor models (SEM), score reliability typically takes the form of $\rho_{xx’} = \frac{\sigma^2_\eta}{\sigma^2_X}$, where $\eta$ describes the underlying latent factor. Similarly, while precision is less often described in terms of score reliability, it can be described as $\rho_{xx’} = \frac{\sigma^2_\theta}{\sigma^2_X}$. Here, again, $\theta$ describes the underlying latent ability factor.
+
+What all these forms of reliability have in common is that, essentially, they try to quantify all the variance that is not just from random noise, relative to the total variance observed in the manifest scores. This leads to a parameter space between 0 and 1 for the score reliability, where a 0 indicates that all the observes score variance is in fact random noise, while the 1 indicates that there is no random noise in the observed scores. It is important to note that, no matter the score framework used, reliability is not an aspect of a measuring instrument, but an aspect of the scores created by administering a specific measuring instrument to a specific population. Score reliability is the most popular parameter to evaluate that quality of a measuring instrument. Accordingly, several approaches have been proposed, that allow for a comparison of precision in scores produced by a measuring instrument across different groups or populations.
+
+## Approaches to identify differences in measurement quality
+
+### Reliability Generalization Meta-Analysis
+
+As score reliability is the most widely reported assessment of measurement precision in the literature, an approach has been developed to model score reliability estimates. Referred to Reliability Generalization Meta-Analysis entails the collection of score reliability estimates derived from the administration of the same instrument across several different samples. Using an appropriate variance stabilising transformation (Bonett), a random-effects meta-analysis can be used to generate an estimate of mean score reliability corrected for sampling error. Additionally, an estimate of heterogeneity, the population variance of the score reliability across samples, also corrected for sampling error, can be extracted. The meta-analytic model is typically paired with Cochran’s Q-test, a significance test to assess whether the estimate of heterogeneity can be statistically differentiated from zero.
+
+Therefore, Reliability Generalization Meta-Analysis allows for an assessment to what extent the differences in score reliability observed across several samples do actually constitute to “true” differences in score reliability. This procedure is highly accessible, as aggregate information in the form of estimates of score reliability and its standard error are sufficient for analysis. No individual participant data is required. However, this also means that Reliability Generalization Meta-Analysis can only inform us on differences in relative precision, as no information beyond score reliability is available. More diverse samples produce scores of larger score reliability, even if measurement precision is identical. Assessing score reliability obfuscates this, even if measurement precision is identical across different groups/populations, if the groups/populations vary in how diverse they are in terms of true scores or the distribution of the latent, Reliability Generalization Meta-Analysis will suggest that measurement precision is heterogeneous.
+
+### Measurement Invariance Analysis
+
+While Reliability Generalization Meta-Analysis can identify differences in score reliability across administrations, it can not identify differences in absolute error score variance. Alternatively, factor analysis approaches like structural equation modelling (SEM) or confirmatory factor analysis (CFA) provide tests ultimately for such differences. The approach known as measurement invariance was initially proposed by Byrne, Shavelson and Muthen (1989). Using confirmatory group factor analysis (which is often implemented in a SEM-framework) the fit of a model is tested repeatedly. Starting with a completely free model, with each iteration more parameters are fixed. Using a null hypothesis significance test (NHST) or some other metric for which cut-off values are available, we can assess whether the model fits the new constraints significantly worse. In that case, measurement invariance for that particular step is not given.
+
+Typically, a sequence of four tests, assessing four facets of measurement invariance, are completed. Often, initially a CFA-model describing how the latent factor is operationalized by the individual items is modelled, where factor loadings, item intercepts and residual variances are free to vary across groups. This model is evaluated against a completely free model, where the factor structure is not predetermined. If the more restrictive CFA-model fits reasonably well, it suggests that the factor structure holds across groups, this step is often referred to as configural invariance. If the model does fit worse, typically no further, more restrictive tests of invariance are undertaken, as the items are noninvariant at the lowest level. Subsequently, a second, slightly more restrictive model is defined, in which the factor loadings are constrained to be identical across groups. This model is evaluated against the previous model, which determined the configural invariance. If the more restrictive model fits sufficiently well, this indicates that the relationship between observed item score and latent factor is the same across groups, often referred to as metric invariance. The next model, where additionally the item intercepts are constrained to be identical across groups is again tested against the previous model determining metric invariance. If this model fits, it demonstrates that the differences in observed scores can not be explained by differences in how individual respond to the items across groups (e.g. avoiding high or low scores in one or a few, but not all groups), and is referred to as scalar invariance. Lastly, the residual variance are additionally constrained to be equal across groups and such a model is, again, tested against the previous model establishing scalar invariance. If this model fits sufficiently well, it indicates that the random noise observed in the scores, that could not be explained by the latent factor and how it relates to the observed score, is identical across groups. If this holds, it is often referred to as residual invariance.
+
+This last level of measurement invariance, the test for residual invariance, comes close to what a test for heterogeneity in a Reliability Generalization Meta-Analysis does. The preceding levels dealt with the underlying factor structure, the systematic measurement issues (metric invariance) and differences in the group mean response (scalar invariance). Residual variance deals determines whether the amount of random noise in the observed scores is (more or less) identical across groups/populations. If residual variance can not be achieved, this indicates that, in terms of random measurement error, the instrument produces scores of varying quality across the different groups/populations. Unlike a test for heterogeneity in score reliability, this is not necessarily affected by differences in the distribution of the underlying true scores (true score variance or latent factor variance). However, it is important to note that, whether this test is affected by that, depends on how the model was identified initially. As measurement invariance tests are typically performed using the SEM-framework, this implies that some parameter needs to be fixed to a specific value, for the model to be identified. Essentially, as the latent factor scores are unobservable, they can take any arbitrary value – instead, we have to assign meaning to the factor scores, by scaling them in some way. Typically, this is done by choosing one of two procedures: (1) the model is identified by fixing one of the factor loadings to 1 (or any value for that matter). This means that the factor scores are defined on the basis of the scores in that specific item. However, this also means that this item is essentially responsible for ensuring that the whole model is specified correctly. If, for example, the factor loading for the first items was fixed, and this item happens to be defunct, as it holds little relationship to the underlying construct or as it is interpreted differently across the different groups/populations, the specified model will not fit to the data very well. In that case, all invariance tests, starting with the first regarding configural invariance, are biased and bound to lead to uninterpretable results. (2) Alternatively, we can scale the latent factor scores by setting the latent factor variance to 1 (or any value for that matter). As this needs to be done for every group individually, this implies that the variance of the latent factor scores is assumed to be identical across those groups, and the model is estimated accordingly. If, as discussed for the RG-MA, the true score variance is actually not identical across groups, the same is true for the latent factor scores. In that case, the estimates of factor loadings and residual variance will be biased. Similar to RG-MA, this would lead to conclusions that the instrument’s scores diverge in measuring quality (both in random and systematic measurement quality) across the groups, even though this is not necessarily the case.
+
+Therein, using measurement invariance techniques allows for valid inference concerning the presence of differences in random measurement error across groups. A combination of significance tests and metrics with established cut-off criteria, which help identify whether error variance heterogeneity is present or not. However, no metric is available that assess how large those error variance differences are and how strongly they affect the observed scores. Additionally, some of the assumptions underlying the RG-MA approach underly the measurement invariance approach as well, depending on how the model is to be identified (either (essential) tau-equivalence or homogeneous true score variance/latent factor variance).
+
+### Item Reponse Theory
+
+### Analysis of error score variance - Boot-Err
+
+Alternatively, we have developed an alternative approach to discuss the question of differences in measurement quality across administrations of the same instrument. Rooted in CTT and inspired by shortcomings of the RG-MA literature, we proposed a novel method to assess error score variance directly \[@beinhauer2025. Assuming that full IPD-data is available, which is required for the measurement invariance and IRT approaches as well, Boot-Err estimates and tests for heterogeneity error score variance. As this manuscript serves as a tutorial to help researchers understand how Boot-Err is used in practice, here a rather short description of how Boot-Err works will follow.
+
+By collecting estimates of score reliability, e.g. Cronbach’s Alpha, the Greatest Lower Bound or an Intraclass Correlation, these can be used to generate estimates of error score variance for each group/sample respectively. As for score reliability, estimates of variances and variance components are not variance-stable. This means that the size of their individual sampling error (SE) depends on the size of the variance component itself – a larger error score variance therefore automatically comes with a larger standard error. Boot-Err employs traditional random-effects meta-analytic models to discuss heterogeneity. As such models make use of the standard error to weigh individual estimates and estimate heterogeneity, without variance-stable parameters, estimates and tests are bound to be biased. Therefore, a variance-stabilizing transformation of error score variance estimates is performed, simply by taking the log of the individual estimate. Using bootstrapping, we can derive robust standard errors for these transformed estimates of error score variance.
+
+Using a random-effects meta-analysis, we can estimate the mean (transformed) error score variance and its heterogeneity. Additionally, we have derived equations, which can be used to back-transform these estimates to the initial scale of error score variances. Therein, to our knowledge, this is the only procedure that actually generates an estimate of the extent of the differences found in error score variance. Using Cochran’s Q-test for heterogeneity, we can assess in how far the estimate of heterogeneity can be distinguished from zero using a criterion of statistical significance. Similar to the approaches of measurement invariance and IRT, Boot-Err allows for an NHST, targeting whether differences in measurement quality in terms of random error can be found. Lastly, by following the same steps for the total score variance (performing a random-effects meta-analysis on transformed estimates and back-transform mean and heterogeneity), we can compute how much heterogeneity in the total score variance could actually be attributed to differences in random measurement error. Therein, Boot-Err also allows for a relative assessment, in how far differences in random error are responsible for the general heterogeneity observed in score variances or effect sizes.
+
+### What inference does each method allow?
+
+| Approach | Distinctive Assumption | Appropriate Inference |
+|------------------|------------------------------|------------------------|
+| Reliability Generalization Meta-Analysis | \- Essentially parallel items <br> - Appropriately modelled distribution of reliability coefficients | \- Presence of differences in score reliability across administrations <br> - Estimate of extent of those differences |
+| Measurement Invariance (Residual Invariance step) | \- Appropriately identified model (correctly identified stable item variance OR stable latent score variance across administrations) | \- Presence of differences in random error score variance across administrations |
+| IRT | \- | \- Presence of differences in specific error score variance component across administrations |
+| Boot-Err | \- Essentially parallel items <br> - Appropriately modelled distribution of variance components | \- Presence of differences in random error score variance across administrations <br> - Estimate of extent of those differences |
+
+Across the previous paragraphs, we have highlighted how RG-MA, Measurement Invariance Testing, IRT Reliability Approaches and Boot-Err take different approaches to discuss (more or less) the same question: Does measurement quality diverge across several administrations of the same instrument. However, we have also outlined that the different approaches do not allow for the same kind of inference and estimate. This implies that they are not all suited equally well to assess these differences in measurement quality, even though we already restricted ourself to questions of random measurement error. Table 1 summarises the differences across the four approaches in terms of distinctive assumptions underlying the individual approach, and the appropriate conclusion, that can be drawn from each approach individually.
+
+If we are only interested in discussing relative random measurement error across administrations, then RG-MA is the most appropriate approach. Assuming that score reliability coefficients are modelled appropriately (which necessarily requires a transformation of coefficients) and items are essentially parallel (which is an assumption underlying the transformation of reliability coefficients, not the estimation of the coefficients themselves), RG-MA provides a robust NHST, detecting differences in score reliability across administrations. Additionally, it provides and estimate of heterogeneity of score reliability coefficients, which can inform us on how much divergence we can expect across administrations of the same scale to similar populations.
+
+If we are interested in absolute random measurement error, on the other hand, RG-MA is not a valid approach. Instead, users can turn towards the established methods of measurement invariance testing or IRT (?). The test for residual invariance (also known as full uniqueness invariance) assesses in how far the residual item variance differs across administrations of the same instrument. Assuming that the model is appropriately identified (keeping the implications of restricting either factor loading or latent factor variance in mind), residual item variance is essentially the same as random error score variance. Therein, measurement invariance testing allows for an NHST, but also tests using other indicators with established cut-offs, both of which allow to identify whether differences in random measurement error persist across administrations.
+
+However, both IRT and measurement invariance testing do not allow for an assessment of the extent of those differences in random measurement error. If we are interested in estimating, how strongly the random error score variance varies across administrations, we can turn towards Boot-Err. Assuming that the items are essentially parallel (which is more restrictive than assumptions underlying the measurement invariance approach) and that the variance components are appropriately modelled, Boot-Err supplied both an estimate of the extent of differences in error score variance across administrations and an NHST for that heterogeneity. Generally, as Boot-Err was developed specifically to fill that gap, to our knowledge it is the only approach that allows for an estimate of heterogeneity in error score variance.
+
+However, it is important to keep in mind that the distinctions drawn between these approaches are overemphasised, to highlight which inference can be drawn from each individually. At the same time, the approaches do not contradict each other. In our proposal for Boot-Err, we discuss how a typical RG-MA is best enriched by performing a Boot-Err additionally, to highlight how those differences in score reliability might have come into play. Similarly, if estimates of residual variance are derived from the models constructed in the measurement invariance testing procedure, a modified approach of Boot-Err might be used to estimate the extent of heterogeneity in residual variance across administrations. (The same is true for IRT?)
+
+## Tutorial
 
 ### Step 0 - Preparing Data
 
+Since each data-set is different, depending on how data was collected and possibly aggregated, Step 0 is not formalized in the Boot-Err approach. Instead, the data needs to be cleaned and appropriately manipulated beforehand. By default, the Boot-Err approach makes use of list-wise deletion, if any observation for an item is missing. This tutorial makes use of data in a wide format. Concerning list-wise deletion, this implies that if a participant fails to respond to one or several items from the measuring instrument we aim to assess, all data from that participant is disregarded. Essentially, the entire row from the wide-format data-set is deleted/ignored. Researchers that prefer to make use of more sophisticated approaches to missing data, such as multiple imputation, will need to perform this within step 0.
+
+For the purpose of this tutorial, we use the Boot-Err approach to assess in how far random error score variance is identical across administrations of the Conscientiousness dimension from the HEXACO personality inventory. In the Registered Report 10, Verschuere et al. [-@RRRMazar] replicated Experiment 1 from Mazar et al. (2008) across 19 labs. The original study tested the self-concept maintenance theory, which implies that people are willing to be dishonest about their performance in a task if it helps to maximize profits as long as they can hold a positive view of themselves. In the original Experiment 1, participants were asked to solve a number of matrices in a problem-solving task. During the experiment, participants were briefly left alone, allowing them to claim they solved any arbitrary number of matrices. As participants were paid according to their performance in the task, both an opportunity and the incentive to cheat were induced. Participants were randomly assigned to either a control group, where they recalled 10 books they read in high school, or a treatment group, where they recalled the Ten Commandments. Recalling the Ten Commandments was supposed to serve as a moral reminder, increasing the participants attention to standard for honesty. While recalling 10 books was a neutral task, recalling the Ten Commandments was supposed to remind participants that cheating for personal gain is "bad" and clashes with a positive self-image. Therefore, Mazar et al. expected participants in the treatment condition to report a lower number of solved matrices than in the control condition. In the original study, the HEXACO personality inventory was included as a filler task and for exploratory analyses regarding potential moderators of dishonesty. We chose the conscientiousness dimension of HEXACO for no specific reason, any of the other five subscales could have been used for the means of this tutorial.
 
 ```{r}
 # relevant libraries required for this script
@@ -48,12 +106,10 @@ unzip(here("Data/Downloaded Data/Meta-Analysis_2018-07-09.zip"),
       junkpaths = T)
 ```
 
-You can add options to executable code like this 
-
 ```{r}
 # HEXACO Conscientiousness
 
-
+# a) Load data and select laboratories part of primary replication
 
 # Thankfully, for the RRR10 project, the data can be taken from a file directly, without the need of combination:
 pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/raw_data_corrected_MAA.csv")))
@@ -75,13 +131,13 @@ labs_in_data[16] <- "Ozdogru"
 labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
 pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
 
-# include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
-pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
+# # include only participants in cheat condition (design was 2x2, cheat - no cheat x commandment - books)
+# pc_df <- pc_df[which(pc_df$maz.cheat.cond == "cheat"),]
+
+# b) Select relevant variables and re-code items that are coded in the opposite direction
 
 # retain only those columns, which are needed for subsequent analysis.
-pc_df <- pc_df[,c(which(names(pc_df) %in% c("lab.name", "inclusion", "maz.prime.cond", "maz.cheat.cond", "source")),
-                  grep("^religious", names(pc_df)),
-                  grep("^fatigue", names(pc_df)),
+pc_df <- pc_df[,c(which(names(pc_df) %in% c("source")),
                   grep("^hex", names(pc_df)))]
 
 # recoding the hexaco items, that need recoding
@@ -96,6 +152,9 @@ names_items_hex_recode <- paste0("hex", items_hex_recode) # pasting "hex" and nu
 names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") # adding _R for names of items, that are recoded
 pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] # recode items that need recoding
 
+
+# c) select items belonging to Conscientiousness subscale
+
 #Conscientiousness
 items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) # items in Conscientiousness subscale
 names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) # did item need recoding?
@@ -103,12 +162,31 @@ pc_hex_items_CO <- which(names(pc_df) %in% names_items_hex_CO) # select all item
 
 pc_df <- pc_df[,c(names_items_hex_CO, "source")]
 
-pc_df <- na.omit(pc_df)
+# pc_df <- na.omit(pc_df)
 
 labs <- unique(pc_df$source)
+
+colSums(is.na(pc_df))
+
+pc_df <- na.omit(pc_df)
 ```
 
+While the data cleaning and manipulation procedure is bound to be different for every research project, we briefly discuss how we come to a final data-set for this tutorial. Firstly, we download the zipped replication data-set from the RRR10 OSF-repository (osf.io/fwnc2), using the osfr R package version 0.2.9 (ref.). After unzipping, we can read the data-file in R. We want to restrict our analysis to only those participants, which were included in the replicators' primary analyses. Therein, we end up with 4,674 participants from 19 laboratories. We achieve this in substep *a)* by identifying the relevant laboratories from the published manuscript and filtering out all laboratories that do not belong to the primary replication. The data-set contains a large number of information, that we do not need for the Boot-Err procedure to assess Conscientiousness error score variance. Therefore, in substep b) we retain only those columns from the data-set, that contain information about the participants' responses to the HEXACO-items and in which laboratory the participant was assessed. Since some of the HEXACO-items are reverse-coded, we need to re-code half of the items, so the scale is identical across all items. Lastly, in substep c), we remove all columns that contain the responses on the other HEXACO-dimensions, which are not conscientiousness. Therein, we have constructed a data-set, containing the responses on Conscientiousness from all participants that are part of the primary replication sample in RRR10.
+
+However, we find that some participants responses on the Conscientiousness-items are missing in this data-set. While this was of no concern to the replication-authors, as the HEXACO-inventory served as a filler instrument, the same is not true for this tutorial. We will use Cronbach's Alpha to estimate score reliability. Cronbach's Alpha can not deal with missing responses. To keep it simple for this tutorial, we make use of list-wise deletion to remove any missing responses from the data-set. This means that the data for each participant, where any response on one or several items is missing is deleted from the data-set. Alternative approaches, that attempt to impute the missing responses while retaining the general covariance-structure of the data-set are available. Great examples include Multiple Imputation or Multivariate Imputation by Chained Equations. Singe imputation methods like Mean or Mode Imputation restrict the data-sets covariance structure, leading to estimation issues and biases in subsequent analyses. Finishing step 0, we have constructed a data-set, containing only the responses of participants that belong to the replication authors' primary analysis sample, additionally removing missing responses from the data-set using listwise deletion. Subsequently, we can begin to follow the Boot-Err procedure.
+
 ### Step 1 - estimating score reliability
+
+The first step in the Boot-Err procedure is to generate estimates of score reliability for each sample or administration site respectively. In the following code, we use an *sapply*-loop, to compute Cronbach's Alpha separately for each laboratory in the data-set. Cronbach's Alpha is generally defined in the following @eq-alpha_formal (ref.).
+
+$$\alpha=\frac{k^2\ \bar{\sigma}_{ij}}{\sigma^2_x}$$ {#eq-alpha_formal}
+Here, $k$ corresponds to the number of items in the scale, $\bar{\sigma}_{ij}$ constitutes the average covariance between items and $\sigma^2_x$ constitutes the total score variance in the total test results.
+
+However, computing the average item covariance can be computationally intensive, and a more efficient computation technique is available in @eq-alpha_fast (ref.).
+
+$$\alpha = \frac{k}{k-1}\left(1-\frac{\sum_{i=1}^k\sigma^2_{i}}{\sum_{i=1}^k\sum_{j=1}^k\ \sigma_{ij}}\right) $$ {#eq-alpha_fast}
+
+Here, $\sigma^2_{i}$ describes the variance of scores on item $i$, while $\sigma_{ij}$ describes the covariance between items $i$ and $j$. The equation in @eq-alpha_fast computes the same Cronbach's Alpha as in @eq-alpha_formal, but much more efficiently. By using *sapply* to quickly loop across all laboratories, we can efficiently generate a vector containing all estimates of Cronbach's Alpha for each administration site respectively.
 
 ```{r}
 alpha_vec <- sapply(labs, FUN = function(lab){
@@ -130,6 +208,17 @@ alpha_vec
 
 ### Step 2 - estimating error score variance
 
+After generating estimates of score reliability using Cronbach's Alpha, we can turn towards Step 2 of the Boot-Err procedure - estimating error score variance. According to CTT, error score variance is defined as described in @eq-error_var.
+
+$$ {\sigma}^2_e = \left(1 - \rho_{xx'} \right) \sigma^2_x$$ {#eq-error_var}
+
+This means, provided we generate an estimate of total score variance, we can use @eq-error_est to estimate error score variance, as we already have estimate of score reliability in the form of Cronbach's Alpha readily available.
+
+$$ \hat{\sigma}^2_e = \left(1 - \hat{\alpha} \right) \hat{\sigma}^2_x$$ {#eq-error_est}
+Here, $\hat{\alpha}$ describes the estimate of Cronbach's Alpha and $\hat{\sigma}^2_x$ constitutes an estimate of total score variance.
+
+In the following code we, again, use an *sapply*-function to efficiently repeat the same computation for each laboratory. We quickly estimate the total score variance $\sigma^2_x$ by averaging the item scores of each participant (generating the test score) and computing the variance of these test scores. Since the *sapply*-function also returns a vector of $\sigma^2_x$-estimates, we can easily use @eq-error_est to generate a vector containing error score variance $\sigma^2_e$-estimates for each laboratory respectively.
+
 ```{r}
 
 var_X_vec <- sapply(labs, FUN = function(lab){
@@ -146,7 +235,7 @@ var_X_vec <- sapply(labs, FUN = function(lab){
   
 })
 
-var_E_vec <- var_X_vec * (1-alpha_vec)
+var_E_vec <-  (1-alpha_vec) * var_X_vec
 
 var_E_vec
 
@@ -214,6 +303,7 @@ ln_var_E_rma <- metafor::rma(data = ln_var_E_df,
 ln_var_E_rma
 
 ```
+
 ### step 5 - backtransforming estimates
 
 ```{r}
@@ -230,3 +320,8 @@ backtransform_var_mu(ln_var_E_rma)
 backtransform_var_tau2(ln_var_E_rma) %>% 
   sqrt(.)
 ```
+
+## References
+
+::: {#refs}
+:::
