@@ -359,6 +359,12 @@ To do so, we need to back-transform our newly generated estimates to the origina
 
 ### step 5 - backtransforming estimates
 
+The transformation of score variance (components) using the natural log not only serves to generate variance-stable estimates. Additionally, it comes with the added benefit, that we can assume $T[\sigma^2_e]$ to follow a normal distribution. Several authors have proposed that the total score variance, if not constant, can be described by a log-normal distribution (refs.). This means that the log-transformed estimates accordingly follow a normal distribution. This is very neat for the application of the Boot-Err technique, as one central assumption of a random-effects meta-analysis is that the parameter follows a normal distribution. Additionally, it helps us back-transform the estimates of meta-analytic mean $\mu_{T[\sigma^2_e]}$ and its heterogeneity $\tau^2_{T[\sigma^2_e]$, as equations are readily available (refs.).
+
+$$ \mu_{\sigma^2_e} \approx \exp\left(\mu_{T[\sigma^2_e]} + \frac{1}{2} \tau^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_mu}
+
+$$ \tau^2_{\sigma^2_e} \approx \exp\left(\tau^2_{T[\sigma^2_e]} - 1\right) \cdot \exp\left(2 \mu_{T[\sigma^2_e]} + \tau^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_var}
+
 ```{r}
 backtransform_var_mu <- function(rma_obj){
   exp(rma_obj$b[1] + (.5*rma_obj$tau2))
