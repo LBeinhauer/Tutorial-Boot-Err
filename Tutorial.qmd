@@ -59,13 +59,23 @@ That is because score reliability is actually the ratio of error score variance 
 
 ### Measurement invariance testing
 
-Techniques have been developed to inspect measuring quality beyond the proportion of random measurement error to total score variance. Measurement invariance testing attempts to do just that, modelling and assessing in how far the measuring instrument captures the same underlying latent trait.
+Alternative techniques have been developed a long time ago, which allow to further assess in how far the measuring instrument addresses an underlying construct. Measurement invariance testing does just that, modelling and assessing in how far the measuring instrument captures the same underlying trait across several administrations of the same scale.
 
-In a series of four (sometimes more) steps, different levels of measurement invariance are tested.
+Measurement invariance describes a facet of the measuring instrument: that it is *invariant* in its measuring quality when administered to different groups. Different levels of measurement invariance exist, and in a series of four (sometimes more) steps, different levels are tested. The four levels can be summarised as:
 
-Thereby, measurement invariance testing allows for a more nuanced discussion on whether the measuring instrument produces scores of equal quality across administrations.
+-   Configural invariance: Across all administrations, the measuring instrument assesses the same number of factors. If several factors are assessed, the individual items relate to the same factors across all administrations.
 
-However, measurement invariance testing does not allow for a quantification of how large the differences in measurement error are across the different administration sites
+-   Metric invariance: The factor loadings for each individual item are identical across all administrations.
+
+-   Scalar invariance: Systematic differences in the observed scores between administrations can be explained by differences in the underlying factor scores.
+
+-   Residual invariance: The residual variance observed in the item scores, that can not be explained by the underlying factor, is equally large across all administrations.
+
+For the sake of this tutorial, we will not delve deeper into what each measurement invariance level entails and how it is tested in practice. Interested readers are referred to: publication 1, publication 2, 100%-CI blog. Instead, for this tutorial, we have limited our discussion to measuring quality as random measurement error or random noise. Broadly speaking, the first three levels of measurement invariance could be grouped as pertaining systematic error. They discuss differences introduced in the observed scores introduced by systematic differences in the relation between underlying factor and item score. Only the last level discusses random measurement error introduced by imprecise measurement.
+
+A statistical test for residual invariances tests, whether the random noise observed in the item responses, that can not be explained by the underlying factor, is equally large. If the random variation in items scores for our online market research panel is larger than that of our Psychology student sample, the test will flag that the scores are not *residually invariant* (given the statistical power is appropriate, for discussions see publication 3). This implies that, on average, the estimate for Extraversion in our online panel will be farther of from the underlying true value, than the estimate obtained for our Psychology Students. Thereby, measurement invariance testing allows for a more nuanced discussion on whether the measuring instrument produces scores of equal quality across administrations.
+
+However, measurement invariance testing does not allow for a quantification of how large the differences in measurement error are across the different administration sites. Measurement invariance testing only comes with a test, inspecting whether or not there are differences. There is no estimate or effect size that allows a researcher to assess in how far these differences are meaningful to subsequent interpretation.
 
 ### Boot-Err - inspecting differences in random measurement error
 
