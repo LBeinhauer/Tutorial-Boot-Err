@@ -111,15 +111,17 @@ Measurement invariance testing and the test for residual invariance especially o
 
 Therein, similarly to the test for residual invariance, Boot-Err conceptualises measurement quality in terms of noise. However, in contrast to residual invariance testing, it also provides an estimate of *the magnitude of these differences*. A detailed description on how to perform an analysis using Boot-Err can be found in section "Tutorial". We provide an in-depth description of the analytic formalisation and how it can be derived in Beinhauer et al. [-@beinhauer2025].
 
-To broadly outline the underlying idea: a reliability coefficient quantifies the proportion of true score variance relative to the sample's total score variance. Consequently, error score variance can be derived from the observed score variance and the reliability estimate as 
+To broadly outline the underlying idea: a reliability coefficient quantifies the proportion of true score variance relative to the sample's total score variance. Consequently, error score variance can be derived from the observed score variance and the reliability estimate as
 
-$$\hat{\sigma}^2_E = (1 - \hat{\rho}_{xx'})\ \hat{\sigma}^2_X$$ 
+$$\hat{\sigma}^2_E = (1 - \hat{\rho}_{xx'})\ \hat{\sigma}^2_X$${#eq-errorvar}
 
-Boot-Err builds on this identity. Using Bootstrapping techniques, the sampling variability of the estimated error score variance is approximated in terms of the standard error. Appropriate variance-stabilising transformations are applied, so that the error score variance can subsequently be modelled using random-effects meta-analysis (including the appropriate back-transformation). These random-effects meta-analyses provide both a test on whether the differences in random error score variance are statistically significant, as well as an estimate of heterogeneity. The heterogeneity quantifies how strongly the error score variance varies across administration settings, with larger values indicating greater variation and therefore larger differences in error score variance.
+Boot-Err builds on this identity. Using Bootstrapping techniques, the sampling variability of the estimated error score variance is approximated in terms of the standard error. Appropriate variance-stabilising transformations are applied, so that the error score variance can subsequently be modelled using random-effects meta-analysis (including the appropriate back-transformation). While fixed-effects meta-analyses would also be available, these analyses actually assume that the heterogeneity in the population is zero (ref.). This assumption is loosened in random-effects meta-analyses. As we are actively investigating this heterogeneity, we recommend to make use of analyses where such heterogeneity is actually reflected in the assumptions set. 
+
+These random-effects meta-analyses provide both a test on whether the differences in random error score variance are statistically significant, as well as an estimate of heterogeneity. The heterogeneity quantifies how strongly the error score variance varies across administration settings, with larger values indicating greater variation and therefore larger differences in error score variance.
 
 Unlike analyses of reliability coefficients, error score variance reflects the absolute magnitude of random measurement error in the data rather than its proportion relative to total variance. As a consequence, Boot-Err is not affected by differences in true score variance across samples. Even if the underlying factor is distributed differently across samples, differences random measurement error can still be identified. Similar to measurement equivalence testing, Boot-Err provides a statistical test of whether such differences are present. Beyond this, however, it quantifies their extent in terms of heterogeneity of error score variance across administration settings.
 
-Returning to our example of Extraversion, consider the pattern in @eq-RGMA2, where reliability coefficients did not differ between the market research panel and Psychology student sample. A Reliability Generalization Meta-Analysis would therefore suggest equivalent measurement quality across the two administration sites. A test for residual invariance (assuming appropriate statistical power and no issues in model fitting), would likely indicate that residual variances differ, implying that error score variance differs across the administration settings. However, it would not provide an interpretable estimate of the magnitude of these differences. 
+Returning to our example of Extraversion, consider the pattern in @eq-RGMA2, where reliability coefficients did not differ between the market research panel and Psychology student sample. A Reliability Generalization Meta-Analysis would therefore suggest equivalent measurement quality across the two administration sites. A test for residual invariance (assuming appropriate statistical power and no issues in model fitting), would likely indicate that residual variances differ, implying that error score variance differs across the administration settings. However, it would not provide an interpretable estimate of the magnitude of these differences.
 
 Boot-Err would lead to the same substantive conclusion (again, assuming appropriate statistical power). Beyond that, it would additionally yield a quantitative estimate of the heterogeneity in error score variance. For instance, if $\sigma^2_{E,\ students} = 1$ and $\sigma^2_{E,\ panel} = 1.5$, heterogeneity $\tau^2_{\sigma^2_E}$ would be $.065$ ($\tau_{\sigma^2_E} = .25$).
 
@@ -127,11 +129,33 @@ By modelling error score variance directly, Boot-Err enables researchers to quan
 
 ## Tutorial
 
+Having demonstrated the conceptual foundations of Boot-Err, we now demonstrate how the method can be implemented in practice. The goal of this tutorial section is to estimate and compare error score variance of the same psychological scale across multiple independent administration contexts and to test and quantify the heterogeneity in random measurement error using Boot-Err.
+
+For illustration, we analyse the Conscientiousness subscale of the HEXACO-personality inventory as administered in the multi-lab replication project reported by Verschuere et al. [-@RRRMazar]. In this project, Experiment 1 from Mazar et al. (ref.) was replicated across 19 independent laboratories. Each lab administered the same materials, including the HEXACO-inventory, to different participant samples scattered across the globe. This data-set therefore provides an ideal setting for Boot-Err: the same scale was administered across multiple independent samples under comparable but not identical conditions.
+
+Importantly, our interest lies not in the experimental manipulation itself, but in the measurement properties of the HEXACO-Conscientiousness scale across laboratories. The HEXACO personality inventory was administered as a filler instrument between experimental tasks - accordingly, scores of Conscientiousness should not be affected by the experimental manipulation. Each lab constitutes a separate administration context, allowing us to examine whether random measurement error varies across contexts.
+
+#### Tutorial structure
+
+This tutorial provides a step-by-step guide on how to investigate differences in measurement quality across administration contexts using Boot-Err. All analyses are conducted in R. The tutorial includes executable chunks that can be run directly on the reader's own machine by copying the code into R. A quarto-file for this tutorial, containing both text and the executable code chunks can alternatively be found at \[.github / OSF-link\]. No additional proprietary software or supplementary materials are required. The data used within this tutorial is publicly available, we make use of an R-package to download and read the data-set. The entire procedure can be reproduced using the code presented in this section.
+
+The tutorial is structured in 7 different steps: (0) data preparation, (1) estimating score reliability, (2) estimating error score variance, (3) using bootstrapping to generate standard errors, (4) meta-analysis of error score variance, (5) backtransforming estimates, (bonus) relating error score variance to total score variance.
+
+At the end of this tutorial, readers will be able to
+
+-   estimate error score variance for each administration context,
+
+-   approximate the sampling variability of transformed error score variance using bootstrapping,
+
+-   test whether error score variance differs across administration contexts, and
+
+-   evaluate the magnitude of these differences in substantive terms
+
 ### Step 0 - Preparing Data
 
 Since each data-set is different, depending on how data was collected and possibly aggregated, Step 0 is not formalized in the Boot-Err approach. Instead, the data needs to be cleaned and appropriately manipulated beforehand. By default, the Boot-Err approach makes use of list-wise deletion, if any observation for an item is missing. This tutorial makes use of data in a wide format. Concerning list-wise deletion, this implies that if a participant fails to respond to one or several items from the measuring instrument, all data from that participant is disregarded. Essentially, the entire row from the wide-format data-set is deleted/ignored. Researchers that prefer to make use of more sophisticated approaches to missing data, such as multiple imputation, will need to perform this within step 0.
 
-For the purpose of this tutorial, we use the Boot-Err approach to assess in how far random error score variance is identical across administrations of the Conscientiousness dimension from the HEXACO personality inventory. In the Registered Report 10, Verschuere et al. [-@RRRMazar] replicated Experiment 1 from Mazar et al. (2008) across 19 labs. The original study tested the self-concept maintenance theory, which implies that people are willing to be dishonest about their performance in a task if it helps to maximize profits nut only as long as they can hold a positive view of themselves. In the original Experiment 1, participants were asked to solve a number of matrices in a problem-solving task. During the experiment, participants were briefly left alone, allowing them to claim they solved any arbitrary number of matrices. As participants were paid according to their performance in the task, both an opportunity and the incentive to cheat were induced. However, participants were randomly assigned to either a control group, where they recalled 10 books they read in high school, or a treatment group, where they recalled the Ten Commandments. Recalling the Ten Commandments was supposed to serve as a moral reminder, increasing the participants' attention to a moral standard of honesty. While recalling 10 books was a neutral task, recalling the Ten Commandments was supposed to remind participants that cheating for personal gain is "bad" and clashes with a positive self-image. Therefore, Mazar et al. expected participants in the treatment condition to report a lower number of solved matrices than in the control condition. In the original study, the HEXACO personality inventory was included as a filler task and for exploratory analyses regarding potential moderators of dishonesty. We chose the conscientiousness dimension of HEXACO for no specific reason, any of the other five subscales could have been used for the means of this tutorial.
+The following code chunk manages the packages required to follow this tutorial. By executing the code below, the user checks whether the required packages (magrittr, dplyr, osfr, here, zip, data.table, metafor, boot) are already installed. If the packages are not yet installed, they will be downloaded and installed from the default CRAN-repository. All required packages are subsequently loaded.
 
 ```{r, output = F, warning = F}
 # relevant libraries required for this script
@@ -140,21 +164,27 @@ packages <- c("magrittr", "dplyr", "osfr", "here", "zip", "data.table", "metafor
 # check, whether library already installed or not - install and load as needed:
 apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
   
-  pkg_avail <- nzchar(system.file(package = x))   # check if library is installed on system
+  # check if package is installed on system
+  pkg_avail <- nzchar(system.file(package = x))   
   
+   # load the package, if already installed
   if(pkg_avail){
-    require(x, character.only = TRUE)             # load the library, if already installed
+    require(x, character.only = TRUE)            
     
+  # install the package, if missing
   }else{
-    install.packages(x)                           # install the library, if missing
-    require(x, character.only = TRUE)             # load after installation
+    install.packages(x)      
+    
+    # load after installation
+    require(x, character.only = TRUE)             
   }
 })
 ```
 
-```{r, warning = F, eval = F}
-library(here)
+After loading the required packages, we can turn towards downloading the data-set from the OSF-repository. While the data cleaning and manipulation procedure is bound to be different for every research project, we briefly discuss how we come to a final data-set for this tutorial. Firstly, we download the zipped replication data-set from the openly available OSF-repository (osf.io/fwnc2), using the osfr R package. After unzipping, we can read the data-file in R.
 
+```{r, warning = F, eval = F}
+# create relevant directories, so data can be downloaded and stpred
 dir.create(here("Data"), showWarnings = FALSE)
 dir.create(here("Data/Downloaded Data"), showWarnings = FALSE)
 
@@ -171,7 +201,7 @@ unzip(here("Data/Downloaded Data/Meta-Analysis_2018-07-09.zip"),
       junkpaths = T)
 ```
 
-While the data cleaning and manipulation procedure is bound to be different for every research project, we briefly discuss how we come to a final data-set for this tutorial. Firstly, we download the zipped replication data-set from the RRR10 OSF-repository (osf.io/fwnc2), using the osfr R package version 0.2.9 (ref.). After unzipping, we can read the data-file in R. We want to restrict our analysis to only those participants, which were included in the replicators' primary analyses. Therein, we end up with 4,674 participants from 19 laboratories. We achieve this in substep *a)* by identifying the relevant laboratories from the published manuscript and filtering out all laboratories that do not belong to the primary replication.
+For the purpose of this tutorial, we want to restrict our analyses to only those participants, which were included in the replicators' primary analyses. Therein, we end up with 4,674 participants from 19 laboratories. We achieve this in substep *a)* by identifying the relevant laboratories from the published manuscript and filtering out all laboratories that do not belong to the primary replication.
 
 ```{r, warning = F}
 # HEXACO Conscientiousness
@@ -203,12 +233,14 @@ pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
 
 ```
 
-The data-set contains a large number of information, that we do not need. Therefore, in substep *b)* we retain only those columns from the data-set, that contain information about the participants' responses to the HEXACO-items and in which laboratory the participant was assessed. Since some of the HEXACO-items are reverse-coded, we need to re-code half of the items, so the scale is identical across all items.
+The data-set contains a large amount of information, that we do not need, in the form of columns not required for this analysis. Therefore, in substep *b)* we retain only those columns from the data-set, that contain information about the participants' responses to the HEXACO-items and in which laboratory the participant was assessed. Since some of the HEXACO-items are reverse-coded, we need to re-code half of the items, so the scale is identical across all items.
 
 ```{r, warning = F}
 # b) Select relevant variables and re-code items that are coded in the opposite direction
 
-# retain only those columns, which are needed for subsequent analysis.
+# retain only those columns, which are related to the HEXACO-personality inventory
+# we can do so by only retaining columns, whose names start with "hex"
+# As we need to differentiate between scores from laboratories, we keep column "source"
 pc_df <- pc_df[,c(which(names(pc_df) %in% c("source")),
                   grep("^hex", names(pc_df)))]
 
@@ -217,48 +249,61 @@ pc_df <- pc_df[,c(which(names(pc_df) %in% c("source")),
 for(i in grep("^hex", names(pc_df))){
   pc_df[,i] <- as.integer(pc_df[,i])
 }
+
 # these are the numbers of the items, that need recoding
 items_hex_recode <- c(30, 12, 60, 42, 24, 28, 53, 35, 41, 59, 28, 52, 10, 46, 9, 15, 57, 21, 26, 32, 14, 20, 44, 56, 1, 31, 49, 19, 55, 48)
-names_items_hex_recode <- paste0("hex", items_hex_recode) # pasting "hex" and number gives the column names
 
-names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") # adding _R for names of items, that are recoded
-pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] # recode items that need recoding
+# combining "hex" and number gives the column names
+names_items_hex_recode <- paste0("hex", items_hex_recode) 
+
+# adding _R for names of items, that are recoded
+names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") 
+
+# replace the original (un-recoded) scores with the recoded ones
+pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] 
 ```
 
 Lastly, in substep *c)*, we remove all columns that contain responses on the other HEXACO-dimensions, which are not Conscientiousness. Therein, we have constructed a data-set, containing the responses on Conscientiousness from all participants that are part of the primary replication sample in RRR10.
 
 ```{r, warning = FALSE}
-
 # c) select items belonging to Conscientiousness subscale
 
-#Conscientiousness
-items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) # items in Conscientiousness subscale
-names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) # did item need recoding?
-pc_hex_items_CO <- which(names(pc_df) %in% names_items_hex_CO) # select all items from Conscientiousness subscale, correctly coded
+# Conscientiousness
+# items in Conscientiousness subscale
+items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) 
 
+# did item need recoding?
+names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) 
+
+# select all items from Conscientiousness subscale, correctly coded
+pc_hex_items_CO <- which(names(pc_df) %in% names_items_hex_CO) 
+
+# retain only columns concerning Conscientiousness and source
 pc_df <- pc_df[,c(names_items_hex_CO, "source")]
 
-# pc_df <- na.omit(pc_df)
-
+# identify individual laboratories
 labs <- unique(pc_df$source)
-
 ```
 
-However, we find that some participants' responses on the Conscientiousness-items are missing in this data-set. While this was of no concern to the replication-authors, as the HEXACO-inventory served as a filler instrument, the same is not true for this tutorial. We will use Cronbach's Alpha to estimate score reliability. Cronbach's Alpha can not deal with missing responses. To keep it simple for this tutorial, we make use of list-wise deletion to remove any missing responses from the data-set. This means that the data for each participant, where any response on one or several items is missing is deleted from the data-set. Alternative approaches, that attempt to impute the missing responses while retaining the general covariance-structure of the data-set are available. Great examples include Multiple Imputation or Multivariate Imputation by Chained Equations. Singe imputation methods like Mean or Mode Imputation restrict the data-sets covariance structure, leading to estimation issues and biases in subsequent analyses.
+However, we find that some participants' responses on the Conscientiousness-items are missing in this data-set. While this was of no concern to the replication-authors, as the HEXACO-inventory served as a filler instrument, the same is not true for this tutorial. We will use Cronbach's Alpha to estimate score reliability. Cronbach's Alpha can not deal with missing responses. To keep it simple for this tutorial, we make use of list-wise deletion, removing any missing responses from the data-set. This means that the data for each participant where any response on one or several items is missing is deleted from the data-set. Alternative approaches, that attempt to impute the missing responses while retaining the general covariance-structure of the data-set are available. Great examples include Multiple Imputation (ref.) or Multivariate Imputation by Chained Equations (ref.). Singe imputation methods like Mean or Mode Imputation restrict the data-sets covariance structure, leading to estimation issues and biases in subsequent analyses.
+
+In the following code chunk, we compute how many scores are missing for each individual item. Subsequently, we retain only scores from participants, where no single item score for Conscientiousness is missing.
 
 ```{r, warning = FALSE}
 # d) dealing with missing responses
 
+# compute number of missing values per item
 colSums(is.na(pc_df))
 
+# retain only complete observation sets
 pc_df <- na.omit(pc_df)
 ```
 
-Finishing step 0, we have constructed a data-set, containing only the responses of participants that belong to the replication authors' primary analysis sample, additionally removing missing responses from the data-set using listwise deletion. Subsequently, we can begin to follow the Boot-Err procedure.
+Finishing step 0, we have constructed a data-set, containing only the complete response sets of participants belonging to the replication authors' primary analysis sample. Subsequently, we can begin to follow the Boot-Err procedure.
 
 ### Step 1 - estimating score reliability
 
-The first step in the Boot-Err procedure is to generate estimates of score reliability for each sample or administration site respectively. In the following code, we use an *sapply*-loop to compute Cronbach's Alpha separately for each laboratory in the data-set. Cronbach's Alpha is generally defined in the following @eq-alpha_formal (ref.).
+The first step in the Boot-Err procedure aims to generate estimates of score reliability for each sample or administration site respectively. In the following code, we use *sapply()* to compute Cronbach's Alpha separately for each laboratory in the data-set. Cronbach's Alpha is generally defined as outlined in the following @eq-alpha_formal (ref.).
 
 $$\alpha=\frac{k^2\ \bar{\sigma}_{ij}}{\sigma^2_x}$$ {#eq-alpha_formal}
 
@@ -268,48 +313,53 @@ However, computing the average item covariance can be computationally intensive,
 
 $$\alpha = \frac{k}{k-1}\left(1-\frac{\sum_{i=1}^k\sigma^2_{i}}{\sum_{i=1}^k\sum_{j=1}^k\ \sigma_{ij}}\right) $$ {#eq-alpha_fast}
 
-Here, $\sigma^2_{i}$ describes the variance of scores on item $i$, while $\sigma_{ij}$ describes the covariance between items $i$ and $j$. The equation in @eq-alpha_fast computes the same Cronbach's Alpha as in @eq-alpha_formal, but much more efficiently. By using *sapply* to quickly loop across all laboratories, we can efficiently generate a vector containing all estimates of Cronbach's Alpha for each administration site respectively.
+Here, $\sigma^2_{i}$ describes the variance of scores on item $i$, while $\sigma_{ij}$ describes the covariance between items $i$ and $j$. The equation in @eq-alpha_fast generates the same estimate of Cronbach's Alpha as in @eq-alpha_formal, but much more efficiently. By using *sapply* to quickly compute across all laboratories, we can efficiently generate a vector containing estimates of Cronbach's Alpha for each administration site respectively.
 
 ```{r, warning = F}
+# compute Cronbach's Alpha across all administration contexts
+
+# we use sapply as it tends to be faster than a for-loop
 alpha_vec <- sapply(labs, FUN = function(lab){
   
+  # select data for each administration context separately
   dat <- pc_df %>% 
     filter(source == lab) %>% 
     select(-"source")
   
+  # compute covariance matrix
   C <- cov(dat)
+  
+  # extract the number of items
   j <- dim(C)[1]
+  
+  # compute Cronbach's Alpha efficiently
   alpha <- (1 - sum(diag(C))/sum(C)) * (j/(j - 1))
   
   return(alpha)
-  
 })
 
-alpha_vec
+# return the estimate vector (rounded to 2 decimals)
+round(alpha_vec, 2)
 ```
 
 ### Step 2 - estimating error score variance
 
-After generating estimates of score reliability using Cronbach's Alpha, we can turn towards Step 2 of the Boot-Err procedure - estimating error score variance. According to CTT, error score variance is defined as described in @eq-error_var.
+After generating estimates of score reliability using Cronbach's Alpha, we can turn towards Step 2 of the Boot-Err procedure - estimating error score variance. In @eq-errorvar we established that error score variance can be constructed from a reliability coefficient and the total score variance. This means, provided we generate an estimate of total score variance, we can use @eq-error_est to estimate error score variance, as we already have estimate of score reliability in the form of Cronbach's Alpha readily available.
 
-$$ {\sigma}^2_e = \left(1 - \rho_{xx'} \right) \sigma^2_x$$ {#eq-error_var}
-
-This means, provided we generate an estimate of total score variance, we can use @eq-error_est to estimate error score variance, as we already have estimate of score reliability in the form of Cronbach's Alpha readily available.
-
-$$ \hat{\sigma}^2_e = \left(1 - \hat{\alpha} \right) \hat{\sigma}^2_x$$ {#eq-error_est}
-
-Here, $\hat{\alpha}$ describes the estimate of Cronbach's Alpha and $\hat{\sigma}^2_x$ constitutes an estimate of total score variance.
-
-In the following code we, again, use an *sapply*-function to efficiently repeat the same computation for each laboratory. We quickly estimate the total score variance $\sigma^2_x$ by averaging the item scores separately for each participant (generating the test score) and computing the variance of these test scores. Since the *sapply*-function also returns a vector of $\sigma^2_x$-estimates, we can easily use @eq-error_est to generate a vector containing error score variance $\sigma^2_e$-estimates for each laboratory respectively.
+In the following code we, again, use an *sapply*-function to efficiently repeat the same computation for each laboratory. We estimate the total score variance $\sigma^2_X$ by computing Conscientiousness scores as the average item score for each participant (generating the test score) and computing the variance of these test scores. Subsequently, we can easily use @eq-errorvar to generate a vector containing error score variance $\sigma^2_E$-estimates for each laboratory respectively.
 
 ```{r}
+# estimate error score variance for each administration context
 
+# we use sapply as it tends to be faster than a for-loop
 var_X_vec <- sapply(labs, FUN = function(lab){
   
+  # select data for each administration context separately
   dat <- pc_df %>% 
     filter(source == lab) %>% 
     select(-"source")
   
+  # compute the total score variance from individual test scores
   var_X <- dat %>% 
     rowMeans(.) %>% 
     var(.)
@@ -318,40 +368,58 @@ var_X_vec <- sapply(labs, FUN = function(lab){
   
 })
 
+# compute error score variance from the estimates of reliability and total score variance
 var_E_vec <-  (1-alpha_vec) * var_X_vec
 
-var_E_vec
+# return the estimated vector (rounded to 3 decimals)
+round(var_E_vec, 3)
 
 ```
 
 ### Step 3 - construct Standard Errors using Bootstrapping
 
-As described in the section *Analysis of error score variance - Boot-Err*, we use a random-effects meta-analysis to estimate and test for heterogeneity in error score variances. Since estimation of total score variance and its components is not variance-stable, we need to use a variance-stabilizing transformation. Bartlett and Kendall [-@bartlett1946] show that using the natural log, as in @eq-stable_var, is a suitable variance-stabilizing transformation for total score variance estimates. $$ T[\hat{\sigma}^2_x] = ln \left(\hat{\sigma}^2_x \right) $$ {#eq-stable_var}
+As described in the introductory *Boot-Err*-section, we use a random-effects meta-analysis to estimate and test for heterogeneity in error score variances. Since estimation of total score variance and its components is not variance-stable, we need to use a variance-stabilizing transformation. Bartlett and Kendall [-@bartlett1946] show that using the natural log, as in @eq-stable_var, is a suitable variance-stabilizing transformation for total score variance estimates. 
 
-While little evidence on variance-stabilizing transformations for score variance components is available, we have used the natural log for both the total and the error score variance component in our proposal for the Boot-Err [@beinhauer2025]. In the simulation scheme, we have not found a large bias in the estimates which would suggest that the transformation described in @eq-stable_var would be unsuitable for the variance component of error score variance $\sigma^2_e$. Accordingly, we are confident in our claim, that @eq-stable_varE describes a suitable variance-stabilizing transformation.
+$$ T[\hat{\sigma}^2_x] = ln \left(\hat{\sigma}^2_x \right) $$ {#eq-stable_var}
+
+While little evidence on variance-stabilizing transformations for score variance components is available, we have used the natural log for both the total and the error score variance component in our proposal for the Boot-Err [@beinhauer2025]. In the simulation scheme, we only a small but negligible bias in the estimates. We concluded that the transformation described in @eq-stable_var is suitable for the variance component of error score variance $\sigma^2_e$. Therefore, we are confident in our claim that @eq-stable_varE describes a suitable variance-stabilizing transformation.
 
 $$ T[\hat{\sigma}^2_e] = ln \left(\hat{\sigma}^2_e \right) $$ {#eq-stable_varE}
 
-However, in order to run a random-effects meta-analysis, we not only need a variance-stable estimate, but also a Standard Error, quantifying our uncertainty in that estimate. While no analytic approximation of a Standard Error for log-transformed error score variance has been derived, we can use Bootstrapping techniques to generate robust Standard Error estimates for $T[\hat{\sigma}^2_e]$.
+However, in order to run a random-effects meta-analysis, we not only need a variance-stable estimate, but also a Standard Error, quantifying our uncertainty in that estimate. While we are aware of no analytic approximation for the Standard Error of log-transformed error score variance, we can use Bootstrapping techniques to generate robust Standard Error estimates for $T[\hat{\sigma}^2_e]$.
 
-The package *boot* provides easy-to-use and efficient functions (including parallelization if desired) for Bootstrapping techniques [@boot]. In this tutorial, we make use of version 1.3-31. In order to use *boot*, we need to provide the package with a user-written function, which needs to do two things: i) allow the *boot*-package to sample from our data-set (we do so by `dat_boot <- data[indices,]`), and ii) compute the parameter on the re-sampled data-set that we want to boot-strap. In the following code-chunk, we show a function that does just that.
+The package *boot* provides easy-to-use and efficient functions (including parallelization if desired) for Bootstrapping techniques. During the conception of this tutorial, we made use of version 1.3-31. In order to use *boot*, we need to provide the package with a user-written function, which needs to do two things: i) allow the *boot*-package to sample from our data-set (we do so by `dat_boot <- data[indices,]`), and ii) compute the parameter on the re-sampled data-set that we want to boot-strap. In the following code-chunk, we show a function that does just that.
 
 ```{r}
+# define the user-written function to compute transformed error score variance
 
 ln_var_E_boot_func <- function(data, indices){
   
+  # essential for any boot-function: allow boot to sample from dataset rows
   dat_boot <- data[indices,]
   
+  # we have to compute Cronbach's Alpha again for each bootstrapped sample
+  
+  # compute covariance matrix
   C <- cov(dat_boot)
+  
+  # extract number of items
   j <- dim(C)[1]
+  
+  # compute Cronbach's Alpha
   alpha <- (1 - sum(diag(C))/sum(C)) * (j/(j - 1))
   
+  # we also have to compute error score variance again for each bootstrapped sample
+  
+  # compute total score variance
   var_X <- dat_boot %>% 
     rowMeans(.) %>% 
     var(.)
   
+  # compute error score variance
   var_E <- var_X * (1 - alpha)
   
+  # log-transform as variance stabilising transformation
   ln_var_E <- log(var_E)
   
   return(ln_var_E)
@@ -363,21 +431,24 @@ Now that we have a function available for *boot* to re-sample our data and estim
 
 $$ SE\left[T[\hat{\sigma}^2_e]\right] = \sqrt{\frac{1}{n}\sum_{i=1}^n(T[\hat{\sigma}^2_e]_i - \bar{T}[\hat{\sigma}^2_e])^2}$$ {#eq-bootSE}
 
-Here, $n$ describes the number of bootstrap-samples drawn, whereas $\bar{T}[\hat{\sigma}^2_e]$ describes the mean of the log-transformed error score variance estimates of the $n$ bootstrap samples. In the following code-chunk, we use the *boot* package to estimate $SE\left[T[\hat{\sigma}^2_e]\right]$ from 3000 bootstrap samples for each laboratory respectively. Again, we make use of an *sapply*-function to loop efficiently across laboratories.
+Here, $n$ describes the number of bootstrap-samples drawn, whereas $\bar{T}[\hat{\sigma}^2_e]$ describes the mean of the log-transformed error score variance estimates of the $n$ bootstrap samples. In the following code-chunk, we use the *boot* package to estimate $SE\left[T[\hat{\sigma}^2_e]\right]$ from 3000 bootstrap samples for each laboratory respectively. Again, we make use of an *sapply*-function to efficiently compute across all laboratories.
 
 ```{r, warning = FALSE}
-
+# approximate the standard error for error score variance
 
 ln_var_E_SE_vec <- sapply(labs, FUN = function(lab){
   
+  # select data for each administration context separately
   dat <- pc_df %>% 
     filter(source == lab) %>% 
     select(-"source")
   
+  # use boot and our user-defined function to efficiently generate transformed error score variance in 3000 bootstrapped samples
   boot_estimates <- boot::boot(dat, 
                                statistic = ln_var_E_boot_func,
                                R = 3000)
   
+  # compute the standard error
   SE <- sd(boot_estimates$t)
   
   return(SE)
@@ -388,24 +459,32 @@ ln_var_E_SE_vec <- sapply(labs, FUN = function(lab){
 Lastly, we still need to formally transform and store the individual estimates of $T[\hat{\sigma}^2_e]$ for each laboratory (so far we only did this for the bootstrap-samples). However, at this point, computing this transformation is trivial. To make things easier for us in the following steps, we combine the estimates of log-transformed error score variance and its Standard Errors here in a single data-frame. We add the laboratory names to the data-frame, so estimates can be linked to their respective sources.
 
 ```{r, warning = FALSE}
+# combine standard errors and estimates in a data-frame
+
+# transform individual estimates of error score variance
 ln_var_E_vec <- log(var_E_vec)
 
+# combine estimates, standard error and lab-name in data-frame
 ln_var_E_df <- data.frame(ln_var_E = ln_var_E_vec, 
                           ln_var_E_SE = ln_var_E_SE_vec, 
                           laboratory = labs, 
                           row.names = NULL)
 
-ln_var_E_df
+# return the estimates and round the numeric variables (ln-estimate and SE)
+ln_var_E_df %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
 ```
 
 Concluding step 3, we have gathered all estimates we need, to perform a random-effects meta-analysis on (log-transformed) error score variances.
 
 ### Step 4 - meta-analysis of error score variance
 
-For readers who only wish to use Boot-Err, Step 4 is very simple \[Ich habe mal drüber nachgedacht hier als zusätzlichen input das random-effects model zu erklären - der Part hier ist aber doch etwas länger geworden, braucht's das in dem Sinne denn überhaupt?\]. We use the R-package *metafor*, as it provides an efficient and easy-to-use implementation of random-effects meta-analyses for any parameter [@metafor]. Using the *rma*-function, with the argument *method = "REML"*, ensures that we use the REML-estimator of heterogeneity. Hönekopp and Linden [-@hoenekopp2022] have shown that the REML-estimator tends to outperform other estimators across a wide range of conditions. Therefore, the following chunk will run a random-effects meta-analysis in *metafor*, generating an estimate of the meta-analytic mean (in the output `estimate`), estimates of absolute heterogeneity in standard deviation and variance (in the output `tau` and `tau^2`) and estimates of relative heterogeneity in the form of $I^2$ and $H^2$ (in the output `I^2` and `H^2`). Additionally, *metafor* provides the results for two hypothesis tests. Firstly, the test for heterogeneity (`Test for Heterogeneity` in the output), assessing whether the estimate of heteorgeneity $\tau^2$ can be statistically distinguished from $0$. Secondly, the test for the meta-analytic effect size, assessing whether the meta-analytic aggregate can be statistically distinguished from $0$ (in the Output `Model results`).
+For this step, we estimate the heterogeneity of log-transformed error score variance and test whether it can be statistically distinguished from zero. We use the R-package *metafor*, as it provides an efficient and easy-to-use implementation of random-effects meta-analyses for any parameter [@metafor]. Using the *rma*-function with the argument *method = "REML"* ensures that we use the REML-estimator of heterogeneity. Hönekopp and Linden [-@hoenekopp2022] have shown that the REML-estimator tends to outperform other estimators across a wide range of conditions. 
+
+The following chunk will run a random-effects meta-analysis in *metafor*, generating an estimate of the meta-analytic mean (in the output `estimate`), estimates of absolute heterogeneity in standard deviation and variance (in the output `tau` and `tau^2`) and estimates of relative heterogeneity in the form of $I^2$ and $H^2$ (in the output `I^2` and `H^2`). Additionally, *metafor* provides the results for two hypothesis tests. Firstly, the test for heterogeneity (`Test for Heterogeneity` in the output), assessing whether the estimate of heteorgeneity $\tau^2$ can be statistically distinguished from $0$. Secondly, the test for the meta-analytic effect size, assessing whether the meta-analytic aggregate can be statistically distinguished from $0$ (in the Output `Model results`).
 
 ```{r}
-
+# perform the random-effects meta-analysis on log-transformed error score varice
 ln_var_E_rma <- metafor::rma(data = ln_var_E_df,
                              yi = ln_var_E,
                              sei = ln_var_E_SE,
@@ -415,99 +494,118 @@ ln_var_E_rma
 
 ```
 
-The significance tests indicate two things for the log-transformed error score variance of Conscientiousness across replications in Verschuere et al. [-@RRRMazar]: Firstly, we find that the meta-analytic estimate of `r paste0("$\\mu_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$b[1], 3), "$")` is significantly different from zero (`r paste0("$z = ", round(ln_var_E_rma$zval, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$pval < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$pval, 3))), "$")`), using a significance level of 5%. However, this is not meaningful information, as the estimate is on the log-transformed scale and can not be interpreted. Secondly and more interestingly, we find that the test for heterogeneity indicates that there is statistically significant heterogeneity in log-transformed error score variances (`r paste0("$Q(", ln_var_E_rma$k - 1, ") = ", round(ln_var_E_rma$QE, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$QEp < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$QEp, 3))), "$")`). Even though the tested estimates are still on the log-scale, we can nonetheless infer from this result, that error score variance $\sigma^2_e$ is not identical across all administrations of the Conscientiousness-scale. However, the estimate of `r paste0("$\\tau^2_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$tau2, 3), "$")` is uninterpretable due to the log-transformation.
+The significance tests indicate two things for the log-transformed error score variance of Conscientiousness across replications in Verschuere et al. [-@RRRMazar]: Firstly, we find that the meta-analytic estimate of `r paste0("$\\mu_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$b[1], 3), "$")` is significantly different from zero (`r paste0("$z = ", round(ln_var_E_rma$zval, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$pval < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$pval, 3))), "$")`), using a significance level of 5%. However, this information is not particularly meaningful, the estimate is on the log-transformed scale and interpretation is not straightforward. Secondly and more interestingly, we find that the test for heterogeneity indicates that there is statistically significant heterogeneity in log-transformed error score variances (`r paste0("$Q(", ln_var_E_rma$k - 1, ") = ", round(ln_var_E_rma$QE, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$QEp < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$QEp, 3))), "$")`). Even though the tested estimates are still on the log-scale, we can nonetheless infer from this result, that error score variance $\sigma^2_E$ is not identical across all administrations of the Conscientiousness-scale. 
 
-The estimates of relative heterogeneity can be interpreted despite the transformation. The estimate of `r paste0("$I^2 = ", round(ln_var_E_rma$I2, 2), "$")` implies that `r round(ln_var_E_rma$I2, 2)`% of the variance observed in the estimate of error score variance are due to actual heterogeneity in the population, not due to sampling error. Similarly, the estimate of `r paste0("$H^2 = ", round(ln_var_E_rma$H2, 2), "$")` implies that the heterogeneity is `r round(ln_var_E_rma$H2, 2)` times as large as the variance induced by sampling error. According to standard conventions (ref.), both estimate imply a strong or large extent of heterogeneity. However, both estimates of relative heterogeneity are often criticized, as they depend strongly on sample size and are easily manipulated (refs.). Instead, we should turn towards an informative interpretation of the absolute heterogeneity in terms of $\tau^2$ or $\tau$.
+However, the estimate of `r paste0("$\\tau^2_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$tau2, 3), "$")` can not be easily interpreted due to the log-transformation. Instead, the estimates of relative heterogeneity may be interpreted despite the transformation. The estimate of `r paste0("$I^2 = ", round(ln_var_E_rma$I2, 2), "$")` implies that `r round(ln_var_E_rma$I2, 2)`% of the variance observed in the estimate of error score variance are due to actual heterogeneity in the population, not due to sampling error. Similarly, the estimate of `r paste0("$H^2 = ", round(ln_var_E_rma$H2, 2), "$")` implies that the heterogeneity is `r round(ln_var_E_rma$H2, 2)` times as large as the variance induced by sampling error. According to standard conventions (ref.), both estimate imply a strong or large extent of heterogeneity. However, both estimates of relative heterogeneity are often criticized, as they depend strongly on sample size and are easily manipulated (refs.). 
 
-To do so, we need to back-transform our newly generated estimates to the original scale. This is done in Step 5.
+Instead, we should turn towards an informative interpretation of the absolute heterogeneity in terms of $\tau^2$ or $\tau$. To do so, we need to back-transform our newly generated estimates to the original scale. We do so in Step 5.
 
-### Step 5 - Backtransforming estimates
+### Step 5 - Back-transforming estimates
 
-The transformation of score variance (components) using the natural log not only serves to generate variance-stable estimates. Additionally, it comes with the added benefit, that we can assume $T[\sigma^2_e]$ to follow a normal distribution. Several authors have proposed that the total score variance, if not constant, can be described by a log-normal distribution (refs.). This means that the log-transformed estimates accordingly follow a normal distribution. This is very neat for the application of the Boot-Err technique, as one central assumption of a random-effects meta-analysis is that the parameter follows a normal distribution. Additionally, it helps us back-transform the estimates of meta-analytic mean $\mu_{T[\sigma^2_e]}$ and its heterogeneity $\tau^2_{T[\sigma^2_e]}$, as equations are readily available (refs.).
+The transformation of score variance (components) using the natural log not only serves to generate variance-stable estimates. Additionally, it comes with the added benefit, that we can assume $T[\sigma^2_e]$ to follow a normal distribution. Several authors have proposed that the total score variance, if not constant, can be described by a log-normal distribution (refs.). This means that the log-transformed estimates accordingly follow a normal distribution. This is very helpful for the application of the Boot-Err technique, as one central assumption of a random-effects meta-analysis is that the parameter follows a normal distribution. Additionally, it helps us back-transform the estimates of meta-analytic mean $\mu_{T[\sigma^2_e]}$ and its heterogeneity $\tau^2_{T[\sigma^2_e]}$, as equations are readily available (refs.).
 
 $$ \hat{\mu}_{\sigma^2_e} = \exp\left(\hat{\mu}_{T[\sigma^2_e]} + \frac{1}{2} \hat{\tau}^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_mu}
 
-@eq-backtransf_mu demonstrates how the mean error score variance $\hat{\mu}_{\sigma^2_e}$ can be estimated from the meta-analytic estimates of $T[\sigma^2_e]$. Here, $\hat{\mu}_{T[\sigma^2_e]}$ represents the estimate of meta-analytic mean of log-transformed error score variance and $\hat{\tau}^2_{T[\sigma^2_e]}$ describes the estimate of its heterogeneity. Similarly, @eq-backtransf_var can be used to derive the heterogeneity of error score variance $\hat{\tau}^2_{\sigma^2_e}$ on its original scale, from the same meta-analytic estimates of \$T\[\sigma\^2_e\]\$\$.
+@eq-backtransf_mu demonstrates how the mean error score variance $\hat{\mu}_{\sigma^2_e}$ can be estimated from the meta-analytic estimates of $T[\sigma^2_e]$. Here, $\hat{\mu}_{T[\sigma^2_e]}$ represents the estimate of meta-analytic mean of log-transformed error score variance and $\hat{\tau}^2_{T[\sigma^2_e]}$ describes the estimate of its heterogeneity. Similarly, @eq-backtransf_var can be used to derive the heterogeneity of error score variance $\hat{\tau}^2_{\sigma^2_e}$ on its original scale, from the same meta-analytic estimates of $T[\sigma^2_e]$.
 
 $$ \hat{\tau}^2_{\sigma^2_e} = \exp\left(\hat{\tau}^2_{T[\sigma^2_e]} - 1\right) \cdot \exp\left(2 \hat{\mu}_{T[\sigma^2_e]} + \hat{\tau}^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_var}
 
 In the following chunk, we define two functions which compute [Equations -@eq-backtransf_mu] and [-@eq-backtransf_var] from the *metafor*-output. The functions only take the *metafor*-object generated from the *rma*-function as input and return the estimates $\hat{\mu}_{\sigma^2_e}$ and $\hat{\tau}^2_{\sigma^2_e}$ respectively.
 
 ```{r}
+# two functions to back-transform heterogeneity and meta-analytic estimate
+
+# back-transform meta-analytic estimate (the weighted mean)
 backtransform_var_mu <- function(rma_obj){
   exp(rma_obj$b[1] + (.5*rma_obj$tau2))
 }
 
+# back-transforming meta-analytic heterogeneity
 backtransform_var_tau2 <- function(rma_obj){
   (exp(rma_obj$tau2) - 1) * exp((2 * rma_obj$b[1]) + rma_obj$tau2)
 }
 
-backtransform_var_mu(ln_var_E_rma)
 
-backtransform_var_tau2(ln_var_E_rma) %>% 
-  sqrt(.)
+round(backtransform_var_mu(ln_var_E_rma), 3)
+
+round(backtransform_var_tau2(ln_var_E_rma) %>% 
+  sqrt(.), 3)
 ```
 
-Running the two functions in the chunk above returns two estimates: The meta-analytic mean error score variance of the HEXACO-Conscientiousness scale across 19 laboratories is $\hat{\mu}_{\sigma^2_e} = `{r} round(backtransform_var_mu(ln_var_E_rma), 3)`$; The estimate for its heterogeneity is $\hat{\tau}_{\sigma^2_e} =`{r} round((backtransform_var_tau2(ln_var_E_rma) %>%   sqrt(.)), 3)`$. To understand what this implies, we can assess the relative size of heterogeneity, also known as the coefficient of variation, which is computed as $CV = \frac{\tau}{\mu}$. Here we find a CV of $CV_{\sigma^2_e} = `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3)`$. This means that the extent of the differences in error score variances is approximately `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance found across these laboratories.
+Running the two functions in the chunk above returns two estimates: The meta-analytic mean error score variance of the HEXACO-Conscientiousness scale across 19 laboratories is $\hat{\mu}_{\sigma^2_e} = `{r} round(backtransform_var_mu(ln_var_E_rma), 3)`$; The estimate for its heterogeneity is $\hat{\tau}_{\sigma^2_e} =`{r} round((backtransform_var_tau2(ln_var_E_rma) %>%   sqrt(.)), 3)`$. To understand what this implies, we can assess the relative size of heterogeneity, also known as the coefficient of variation, which is computed as $CV = \frac{\tau}{\mu}$. Here we find a CV of $CV_{\sigma^2_e} = `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3)`$. This means that the extent of the differences in error score variances is approximately `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance found across these laboratories. Based on the random-effects model, true error score variance across administrations can be expected to lie approximately between X and Y. These values can be obtained by adding and subtracting the estimated heterogeneity $\hat{\tau}_{\sigma^2_e}$ from the meta-analytic mean $\hat{\mu}_{\sigma^2_e}$ (on the transformed scale) and subsequently back-transforming to the original variance metric. For Conscientiousness, we find an interval where we expect the error score variance to vary at least between `r round(exp(ln_var_E_rma$b[1] - sqrt(ln_var_E_rma$tau2)), 3)` and `r round(exp(ln_var_E_rma$b[1] + sqrt(ln_var_E_rma$tau2)), 3)`
 
-None of the other approaches, such as RG-MA, IRT or measurement invariance testing allow to generate these estimates we have derived using the Boot-Err technique. For researchers who are more accustomed to these scales, these estimates can be highly valuable to understand how much variance in scores we can expect to be introduced by measurement imprecision across administrations of the same scale. Since we are no experts in use of the Conscientiousness-scale, we have to look slightly further beyond. However, as described in the following Bonus-Step, we can follow the Boot-Err technique with an additional parameter, generating much more informative insights.
+None of the other approaches, such as RG-MA, IRT or measurement invariance testing allow to generate these estimates we have derived using the Boot-Err technique. For researchers who have experience working with the respective scale, these estimates can be highly valuable to understand how much variance in scores we can expect to be introduced by measurement imprecision across multiple administrations of the same scale. While we, as authors, lack the expertise on what to expect from the conscientiousness scale, we can construct additional parameters to gain a deeper understanding. In the following Bonus-Step, we delve deeper into the insights generated by the Boot-Err technique.
 
 ### Bonus-Step - Relating error score variance to total score variance
 
-Score reliability $\rho_{xx'}$ is defined as the relative extent to which the score variance observed is attributable to actual differences in the true scores, not to measurement imprecision. However, that also means that $1 - \rho_{xx'}$ describes the relative extent to which the score variance is attributable to random measurement error.
+Score reliability $\rho_{xx'}$ is defined as the relative extent to which total score variance observed is attributable to actual differences in the true scores, not to measurement imprecision, see @eq-reliability. However, that also means that $1 - \rho_{xx'}$ describes the relative extent to which total score variance is attributable to random measurement error.
 
-Similarly, on the meta-analytic scale, we can look at the heterogeneity in total score variance $\sigma^2_x$, and attempt to understand how much of its heterogeneity came to be through differences in error score variance. Intuitively, many researchers tend to ascribe heterogeneity in total score variance $\sigma^2_x$ to differences in measurement precision. This means that often, a larger score variance is interpreted as if it came to be through larger measurement error such as $\sigma^2_e$. However, obviously parts of the heterogeneity might also be better explained by differences in the true score variance $\sigma^2_t$. Fortunately, if we follow Steps 3 through 5 for the total score variance $\sigma^2_x$ instead, we can assess in how far its heterogeneity can be attributed to differences in true score variance $\sigma^2_t$ or measurement error $\sigma^2_e$.
+Similarly, on the meta-analytic scale, we can look at the heterogeneity in total score variance $\sigma^2_x$, and attempt to understand how much of its heterogeneity can be attributed to differences in error score variance. Intuitively, many researchers tend to ascribe heterogeneity in total score variance $\sigma^2_x$ to differences in measurement precision. This means that often, a larger score variance is interpreted as if it was caused by larger measurement error such as $\sigma^2_e$. However, substantial parts of said heterogeneity might also be better explained by differences in the true score variance $\sigma^2_t$. Fortunately, if we follow Steps 3 through 5 for the total score variance $\sigma^2_x$ instead, we can assess in how far its heterogeneity can be attributed to differences in true score variance $\sigma^2_t$ or measurement error $\sigma^2_e$.
 
 In the following chunk, we briefly run through these steps to estimate heterogeneity in total score variance $\sigma^2_x$.
 
 ```{r}
+# perform steps 3 through 5 for total score variance
+
+# define the function for boot to bootstrap transformed total score variance
 ln_var_X_boot_func <- function(data, indices){
   
+  # allow boot to resample from data-set
   dat_boot <- data[indices,]
   
+  # compute total score variance
   var_X <- dat_boot %>% 
     rowMeans(.) %>% 
     var(.)
   
+  # transform total score variance
   ln_var_X <- log(var_X)
   
   return(ln_var_X)
 }
 
 
+# use Bootstrapping to compute standard error of log-transformed total score variance
 ln_var_X_SE_vec <- sapply(labs, FUN = function(lab){
   
+  # select data only for specific administration context
   dat <- pc_df %>% 
     filter(source == lab) %>% 
     select(-"source")
   
+  # use boot to bootstrap log-transformed total score variance
   boot_estimates <- boot::boot(dat, 
                                statistic = ln_var_X_boot_func,
                                R = 3000)
   
+  # estimate standard error
   SE <- sd(boot_estimates$t)
   
   return(SE)
   
 })
 
+# transforme total score variance estimates
 ln_var_X_vec <- log(var_X_vec)
 
+# combine estimates of total score variance and its standard error in single df
 ln_var_X_df <- data.frame(ln_var_X = ln_var_X_vec, 
                           ln_var_X_SE = ln_var_X_SE_vec, 
                           laboratory = labs, 
                           row.names = NULL)
 
+# run random-effects meta-analysis
 ln_var_X_rma <- metafor::rma(data = ln_var_X_df,
                              yi = ln_var_X,
                              sei = ln_var_X_SE,
                              method = "REML")
 
+# round back-transformed meta-analytic estimate to 3rd decimal
+round(backtransform_var_mu(ln_var_X_rma), 3)
 
-backtransform_var_mu(ln_var_X_rma)
-
-backtransform_var_tau2(ln_var_X_rma) %>% 
-  sqrt(.)
+# round back-transformed heterogeneity estimate to 3rd decimal
+round(backtransform_var_tau2(ln_var_X_rma) %>% 
+  sqrt(.), 3)
 
 ```
 
@@ -515,19 +613,23 @@ We find a meta-analytic mean of total score variance $\hat{\mu}_{\sigma^2_x} = `
 
 $$ R = \frac{\hat{\tau}^2_{\sigma^2_e}}{\hat{\tau}^2_{\sigma^2_x}} $$ {#eq-ratio}
 
-In @eq-ratio, we define the ratio-variable $R$ as the ratio of $\hat{\tau}_{\sigma^2_e}$ to $\hat{\tau}_{\sigma^2_e}$. For Conscientiousness, we find a ratio of $R  = `{r} round((backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma)), 3)`$. This means that about `{r} round((backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma)), 3) * 100`% of heterogeneity in $\sigma^2_x$ could be explained by differences in random measurement error. This also means that `{r} round((1 - (backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma))), 3) * 100`% of this heterogeneity needs to be explained by differences in true score variance $\sigma^2_t$.
+In @eq-ratio, we define the ratio-variable $R$ as the ratio of $\hat{\tau}_{\sigma^2_e}$ to $\hat{\tau}_{\sigma^2_X}$. For Conscientiousness, we find a ratio of $R  = `{r} round((backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma)), 3)`$. This means that about `{r} round((backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma)), 3) * 100`% of heterogeneity in $\sigma^2_x$ could be explained by differences in random measurement error. This also means that `{r} round((1 - (backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma))), 3) * 100`% of this heterogeneity is explained by differences in true score variance $\sigma^2_t$.
+
+By following the steps from 1 through 5 we have assessed differences in measurement quality of Conscientiousness across different administration contexts. In doing so, including the Bonus-Step, we have generated a number of estimates and parameters that help us understand in how far these differences are substantive. In the following section, we turn towards a substantive interpretation of what these results imply for the use of the HEXACO-Conscientiousness inventory.
 
 ### Conclusion
 
-Using the Boot-Err technique, we can use random-effects meta-analysis and appropriate variance-stabilizing transformations paired with Bootstrapping techniques to assess in how far there is heterogeneity in random measurement error across administrations of the same scale. Making use of the data supplied by Verschuere et al. [-@RRRMazar], we used Boot-Err to understand in how far there are differences in absolute measurement precision across 19 laboratories where the HEXACO-Conscientiousness personality scale was administered. We not only find statistically significant differences in error score variance, but were also able to estimate the absolute and relative extent of these differences. Therein, we are certain that the random measurement error in the Conscientiousness scores is not constant across samples. We find that the heterogeneity is about `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance. Across administrations of the same scale, error score variance easily varies between `r round(exp(ln_var_E_rma$b[1] - sqrt(ln_var_E_rma$tau2)), 3)` and `r round(exp(ln_var_E_rma$b[1] + sqrt(ln_var_E_rma$tau2)), 3)` (mean value plus/minus heterogeneity, then back-transformed) \[add this to Bonus-Step?\].
+Boot-err essentially consists of 5 steps, where we estimate score reliability (step 1), estimate error score variance (step 2), use appropriate variance-stabilizing transformations paired with Bootstrapping to estimate standard errors (step 3), perform meta-analyses of error score variance (step 4) and back-transform estimates back to the original scale (step 5). In the previous section, we provided custom functions in R for researchers to perform a Boot-Err analysis on data, obtained from a single measuring instrument administered across different contexts. Combining the individual steps allows for an assessment of whether there is heterogeneity in random measurement error across administrations of the same scale. 
 
-In order to better understand what these differences mean, we additionally uncovered in how far the heterogeneity in total score variance can be attributed to these differences in measurement error. Here, we found that the overwhelming majority of heterogeneity, `{r} round((1 - (backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma))), 3) * 100`%, can not be explained by differences in measurement error. For the Conscientiousness-scale, this implies that, while there clearly are substantial differences in measurement error across groups, the distribution of true scores varies much more strongly across groups. This is important, as this implies that the differences in total score variance can not be attributed to differences in measurement error. Instead, Conscientiousness is distributed highly different across those groups. In Beinhauer et al. [-@beinhauer2025liable] we discuss potential causes and implications of this phenomenon.
+Making use of the data supplied by Verschuere et al. [-@RRRMazar], we used Boot-Err to understand in how far there are differences in absolute measurement precision across 19 laboratories where the HEXACO-Conscientiousness personality scale was administered. We not only find statistically significant differences in error score variance, but were also able to estimate the absolute and relative extent of these differences. Therein, we are certain that the random measurement error in the Conscientiousness scores is not constant across samples. We find that the heterogeneity of `{r} round(backtransform_var_tau2(ln_var_E_rma), 3)` is about `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance. Across administrations of the same scale, we can expect error score variance to vary at least between `r round(exp(ln_var_E_rma$b[1] - sqrt(ln_var_E_rma$tau2)), 3)` and `r round(exp(ln_var_E_rma$b[1] + sqrt(ln_var_E_rma$tau2)), 3)`.
+
+In order to better understand what these differences mean, we additionally uncovered in how far the heterogeneity in total score variance can be attributed to these differences in measurement error. Here, we found that the overwhelming majority of heterogeneity, `{r} round((1 - (backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma))), 3) * 100`%, can not be explained by differences in measurement error. For the Conscientiousness-scale, this implies that, while there clearly are substantial differences in measurement error across groups, the distribution of true scores varies much more strongly across groups. This is important, as this implies that the differences in total score variance can not be attributed to differences in measurement error. Instead, Conscientiousness is dispersed highly different across those groups. In Beinhauer et al. [-@beinhauer2025liable] we discuss potential causes and implications of this phenomenon.
 
 ## Discussion
 
-Measurement precision and how strongly it diverges across administrations of the same instrument is a central question in social and behavioural sciences. Differences in random measurement error are not only interesting to researchers assessing the quality of a measuring instrument. It also has clear implications when it comes to hypothesis testing and standardization of effect sizes. Therein, the assessment of measurement equivalence has implications for replication studies and meta-analytic applications. Across the first pages, we have summarised the most popular techniques to assess differences in random measurement error - Reliability Generalization Meta-Analysis, Measurement Invariance Testing and approaches stemming from Item Response Theory. Additionally, we introduced Boot-Err, a technique we developed to step away from relative measures such as score reliability or tests without estimates of how large the differences are, like Measurement Invariance Tests [@beinhauer2025].
+Measurement precision and how strongly it diverges across administrations of the same instrument is a central question in social and behavioural sciences. Differences in random measurement error are not only interesting to researchers assessing the quality of a measuring instrument. These differences also have clear implications concerning hypothesis testing and standardization of effect sizes. We have summarised some of the most popular techniques assessing differences in random measurement error - Reliability Generalization Meta-Analysis and Measurement Invariance Testing. Additionally, we introduced Boot-Err, a technique we developed to step away from relative measures such as score reliability or tests without estimates of how large the differences are, like Measurement Invariance Tests [@beinhauer2025].
 
-In this tutorial, we have demonstrated how the Boot-Err can be used to generate detailed estimates and tests regarding the extent of the differences we observe in random measurement error, and how strongly they affect the differences in score variance. It is important to note that this technique comes with a number of limitations and constraints to generalizability. Just like for any statistical analysis, a number of assumptions need to be met. Regarding application of the Boot-Err, total and error score variance should follow a log-normal distribution and be computed from samples that are generally independent of each other (the individual samples should not be described as if stemming from a nested structure). Additionally, a number of assumptions relate to the type of score reliability estimate used. Here, we made use of Cronbach's Alpha, which typically comes with assumptions of tau-equivalence and unidimensionality (ref.). While these assumptions are widely criticized and rarely hold up in real data (ref.), we need to remind ourselves that these assumptions also relate to typical scoring methods of these measuring instrument. The HEXACO-personality score for each dimension is computed by taking the average of the relevant item scores \[check to make sure this is correct\]. Therein, even stricter assumptions of tau-equivalence and unidimensionality apply - making Cronbach's Alpha the more appropriate choice of score reliability estimate over other ones that may impose less strict assumptions.
+In the tutorial-section, we have demonstrated how Boot-Err can be used to generate detailed estimates and tests regarding the extent of the differences we observe in random measurement error, and how strongly they affect the differences in score variance. It is important to note that this technique comes with a number of limitations and constraints to generalizability. Just like for any statistical analysis, a number of assumptions need to be met. Regarding the application of Boot-Err, total and error score variance should follow a log-normal distribution and be computed from samples that are generally independent of each other (the individual samples should not be described as if stemming from a nested structure). Additionally, a number of assumptions relate to the type of score reliability estimate used. Here, we made use of Cronbach's Alpha, which typically comes with assumptions of tau-equivalence and unidimensionality (ref.). While these assumptions are widely criticized and rarely hold up in real data (ref.), we need to remind ourselves that these assumptions also relate to typical scoring methods of these measuring instrument. The HEXACO-personality score for each dimension is computed by taking the average of the relevant item scores (ref. Hexaco). Therein, even stricter assumptions going beyond tau-equivalence and unidimensionality apply - making Cronbach's Alpha the more appropriate choice of score reliability estimate over other ones that may impose less strict assumptions.
 
 Even though differences in absolute measurement precision are of central interest to measuring instrument and scale development, methods to assess differences in error score variance each come with their own caveats and shortcomings. Models regarding differences in score reliability fail to take differences introduced by true score variance into account, while models simply testing for differences in error score variance without actually estimating it fail to put these differences into perspective. Perhaps this is the reason why discussions surrounding the impact of random measurement error on standardized effect sizes and hypothesis tests has been overemphasized (refs. \[NEED TO PICK THIS UP IN INTRO\]), implying that removing random measurement error was akin to harmonizing variability across populations and data-sets.
 
