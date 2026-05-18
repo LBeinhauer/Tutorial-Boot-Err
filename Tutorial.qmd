@@ -1,55 +1,94 @@
 ---
 title: "Tutorial"
-format: docx
+format: pdf
 bibliography: bibliography/Boot-Err_Tutorial.bib
 csl: bibliography/apa-6th-edition.csl
 ---
+
+# Measuring measurement quality: A critical comparison of three approaches to random error 
+assessment
+
+new structure should follow:
+
+Some things sound alike.
+We explain what each individual thing does.
+We identify use cases for each individual thing.
+There are better tutorials and discussions out for RG-MA and MI.
+What's missing is a tutorial on Boot-Err. That follows here.
+
+Example use cases:
+
+RG-MA
+where is scale relatively more informative in one pop than the other
+e.g. ability test - does it discriminate better among uni than general public
+- students likely less variation among abilities than general public
+essentially: signal to noise-ratio of interest. If rel largely equal, 
+test can be used in both contexts to differentiate between levels of
+ability
+
+Residual Invariance Testing
+cross-cultural CFA of e.g. personality dimension, needs to know whether
+multi-factor scale meets statistical requirements for group comparison
+(spec.: does measurement model hold equivalently)
+Test is confirmatory: does model hold
+likely less groups
+
+Boot-Err
+Same scale across larger number of labs / cultures, wants to know how
+much measurement quality varies - e.g. how much does it contribute to
+variability in effect sizes, is variance large enough to be relevant
+for pooling purposes
+
 
 ## Introduction
 
 Researchers frequently administer the same psychological scale across different samples, settings or populations. A scale may be translated into another language, administered online instead of in person, or completed by participants with different educational or cultural backgrounds. In such situations, an important question arises: does the instrument produce scores of equivalent measurement quality across these administrations?
 
-At first glance, this question appears straightforward. However, what is meant by measurement quality is less obvious. Throughout this tutorial, we focus on random measurement error as a central component of measurement quality. Random measurement error refers to unsystematic fluctuations in observed scores around the values they would take on in the absence of measurement imprecision. Unlike systematic error, which shifts observed scores in a particular direction, random error introduces general fuzziness, often described as noise. On average, observed scores may still be accurate, but individual measurements vary unpredictably around their underlying true values.
+At first glance, this question appears straightforward and several established methods seem to address it. Reliability Generalization Meta-Analysis, residual invariance testing and Boot-Err all speak to the question of whether measurement quality differs across contexts. Because they share this surface-level concern, they might seem interchangeable. However, each method answers a subtly but importantly different question. Applying the wrong tool to a given research problem can lead to misleading conclusions.
 
-If the same instrument is administered in two different contexts, differences in random measurement error imply differences in measurement quality. However, there are several ways to conceptualize and quantify such differences. Importantly, these approaches do not contradict each other. Rather, they reflect different perspectives on what it means for measurement quality to be equivalent.
+The goal of this text is threefold: (1) to clarify what each method actually does, (2) to identify the research contexts each method is best suited for, and, because accessible tutorials already exist for Reliability Generalization Meta-Analysis and residual invariance testing, (3) provide a hands-on tutorial for Boot-Err, where such guidance is currently lacking.
 
-The first, most intuitive and widely used answer is to compare reliability coefficients. Reliability Generalization Meta-Analysis extends this idea by formally testing whether oberved differences in score reliability exceed what would be expected by sampling error. A second, more structurally explicit answer is provided by measurement invariance testing. This framework models the relation between latent factors and observed item responses and evaluates whether residual variances (variance not explained by the underlying factor) are equivalent across groups. Finally, Boot-Err introduces a third perspective. It conceptualises measurement quality directly as error score variance and focuses on estimating and comparing this variance component across administrations. While all three approaches address the question of whether measurement quality differs, they do so from conceptually distinct perspectives and therefore lead to different interpretations.
+Throughout this text, we focus on random measurement error as a central component of measurement quality. Random measurement error refers to unsystematic fluctuations in observed scores around the values they would take on in the absence of measurement imprecision. Unlike systematic error, which shifts observed scores in a particular direction, random error introduces general variation sometimes referred to as noise. On average, observed scores may still be accurate, but individual measurements vary unpredictably around their underlying true values.
 
-Throughout this tutorial, we will explore the perspectives and interpretations from the three approaches using an explicit example. Consider a scale measuring the HEXACO-personality dimension Extraversion. This scale (from the HEXACO-60-PI-R) consists of 10 items and is scored for each individual participant by averaging the 10 item scores (ref.). The Extraversion-scale is administered to a wide range of different samples, under which we find a German sample of Psychology students and an international online panel for market research. The concept of Extraversion is thought to be generalizable across different populations and potentially linked to a larger number of different effects and phenomena. To explore these links, however, we need to make sure that we are measuring comparably well across all administration contexts - otherwise we cannot explore to what extent Extraversion actually generalizes across samples and to what extent the links to other effects and phenomena hold up across contexts.
+If the same instrument is administered in two different contexts, differences in random measurement error imply differences in measurement quality. However, the three methods discussed here do not address this in the same way. Instead, they reflect different perspectives on what it means for measurement quality to be equivalent, and they are therefore suited to different research questions.
+
 
 ### Reliability generalization meta-analysis
 
-A simple and accessible way to compare measuring quality across administrations of the same scale is by comparing the reliability coefficients computed for each administration sample. The conceptual idea behind reliability coefficients can be described in terms of classical test theory. Classical test theory implies that each score $X$ is made up of true score $T$ and error score $E$:
+The first, most intuitive and widely used approach is to compare reliability coefficients across administrations of the same scale. The conceptual idea behind reliability coefficients can be described in terms of classical test theory. Classical test theory implies that each score $X$ is made up of true score $T$ and error score $E$:
 
 $$ X = T + E$$ {#eq-CTT}
 
-Reliability coefficients, such as Cronbach's Alpha, McDonald's Omega or Guttmann's Lambda IV attempt to quantify the proportion of true score variance present in the scores:
+Reliability coefficients, such as Cronbach's Alpha, McDonald's Omega or Guttmann's Lambda IV quantify the proportion of true score variance present in the scores:
 
 $$\rho_{XX'} = \frac{\sigma^2_T}{\sigma^2_X}$$ {#eq-reliability}
 
 where $\rho_{XX'}$ is score reliability, $\sigma^2_T$ is the true score variance and $\sigma^2_X$ is the total score variance, made up of true and error score variance ($\sigma^2_X = \sigma^2_T + \sigma^2_E$, where $\sigma^2_E$ is the error score variance).
 
-This true score variance $\sigma^2_T$ describes the variation in the scores, that can be attributed to genuine differences in the underlying factor being measured. Error score variance $\sigma^2_E$ on the other hand describes the variation in the scores, that can be attributed to random, unsystematic variation - random measurement error that is introduced by the instruments inability to perfectly measure the underlying factor. Thereby, these reliability coefficients essentially describe which proportion of the observed score variance can *not* be attributed to random measurement error. Differences in reliability coefficients therefore highlight, that the proportion of true to total variation in the data differs across administration contexts.
+This true score variance $\sigma^2_T$ describes the variation in the scores, that can be attributed to genuine differences in the underlying factor being measured. Error score variance $\sigma^2_E$ describes the variation in the scores, that can be attributed to random, unsystematic variation - random measurement error that is introduced by the instruments inability to perfectly measure the underlying factor. Reliability coefficients thereby express the proportion of observed score variance that cannot be attributed to random measurement error, and takes on values between 0 and 1.
 
-Generally, reliability coefficients can take on values between 0 and 1, where 0 indicates that the variance in observations is made up of 100 % measurement error, while a 1 indicates that there is no random error in the data. Returning to our example, assume we find a Cronbach's alpha .67 for the scores obtained from our sample of Psychology students, but a Cronbach's alpha of .75 for observations stemming from our online panel. Comparing these numbers, we can conclude that the proportion of true to total variance in the scores is worse for data obtained from Psychology students than for data obtained from the online panel. Of the total score variance observed in each individual sample, a higher proportion can be attributed to actual differences in Extraversion for the online panel, than for the student sample.
+Reliability Generalization Meta-Analysis extends this idea by formally testing whether observed differences in score reliability exceed what would be expected from sampling error alone. Because coefficients derived from samples are always prone to sampling variability, on can not simply compare point estimates across administrations. Meta-analytic techniques model this sampling error and test for heterogeneity. (Meta-analytic) heterogeneity refers to variance, that exceeds the variation that sampling fluctuation alone would produce. If significant heterogeneity is detected, this indicates that reliability differs across administrations in a way, that is likely not attributable to chance. The method additionally yields an estimate of the magnitude of this heterogeneity.
 
-However, coefficients derived from samples are always prone to sampling error. We are aware of this truth everytime we make use of a test for statistical significance of a mean value or standardised effect size (or estimate a posterior distribution for mean value / effect size). Just like the population mean value is not necessarily identical to the estimate obtained from the sample, the same is true for the estimated reliability coefficient. Due to the randomness in the sampling process, the estimated mean value or reliability coefficient may vary randomly around the population value.
+\textbf{What question does it answer?}
+Reliability Generalization Meta-Analysis addresses a ratio-based question: in which contexts is the scale relatively more informative, in the sense that a greater proportion of observed score variance reflects true differences among individuals?
 
-This means that we can not simply compare the estimates of reliability coefficients to determine whether there are true differences in measurement precision across administration sites. However, a formal method to assess whether reliability coefficients of the same instrument differ across administrations has been developed in the form of reliability generalization meta-analysis. Comparing and combining estimates from several studies or samples to derive appropriate mean values and compute how strongly the population values underlying these estimates diverge is known as research synthesis. Techniques in the space of research synthesis typically attempt to model the sampling error introduced by the randomness of the sampling procedure, and correct for it when testing statistical significance or generating estimates. Meta-analysis is a technique that incorporates the uncertainty of sample estimates and allows to test for and model the variance that goes beyond said sampling error. This variance, referred to as heterogeneity, describes the variation of the coefficient that we would have observed, if there was no sampling error. If significant heterogeneity is detected, this indicates that reliability differs across adminstrations beyond what would be expected from sampling fluctuations alone. However, it does not identify the source of these differences.
+\textbf{When is this the right tool?}
+This approach is well suited when the research question concerns the \emph{signal-to-noise ratio} of a scale across populations that are expected to differ in the spread of the underlying construct. Consider an ability test administered both to university students and to the general public. Students likely show less variation in ability than the general population. It is (used to be?) common practice to validate such a test in a sample of university students, as these are readily available. However, if a researcher wishes to apply the ability test to the sample of the general population in order to differentiate between that population's ability levels, the absolute extent of random measurement error is not of interest. 
 
-Reliability generalization meta-analysis aggregates estimates of the same reliability coefficient such as Cronbach's Alpha across several administrations of the same scale, to test whether there are statistically significant differences between these coefficients. Additionally, an estimate of heterogeneity can be derived, which describes how strongly the reliability coefficients vary. In our example case, we can compute Cronbach's Alpha (or other reliability coefficients) for our psychology student sample, for our market research panel and for the other administrations of the scale that we want to compare. Reliability generalization meta-analysis can inform us whether the differences in Cronbach's Alpha are indeed statistically significant. Thereby, we can properly test whether measurement precision in terms of score reliablity differs across administrations.
+Instead, the relative amount of measurement error, the signal-to-noise ratio as assessed through score reliability is of central interest in terms of measurement quality. If score reliability for the general population samples is approximately equal to score reliability for the university student sample, then the ability test discriminates between the levels of ability in both groups equally well. If it differs, the reasons for that differences and their practical implications warrant further investigation. Reliability Generalization Meta-Analysis can reveal this directly, informing decisions about whether the test usefully differentiates among individuals in both contexts. 
 
-Score reliability is the ratio of signal to total score variance, as demonstrated in @eq-reliability. The total score variance is essentially made up of the sum of true and and error score variance. This means that differences in reliability coefficients can not necessarily be attributed to differences in random measurement error alone - this is true irrespective of which reliability coefficient is computed. In our example we assumed that score reliability in the sample of Psychology students was $.67$, while score reliability in the online market research panel was $.75$. We initially interpreted this as an indicator of impaired measurement quality for the Psychology students' Extraversion, implying larger measurement error in that sample. However, these differences might also be caused by variations in the true score variances. Assume that for both samples actually an error score variance of $1$ was underlying. It is reasonable to assume that a sample of German Psychology students is more homogeneous than an online panel for market research that is deliberately constructed to represent a more diverse population. Therefore, the true score variance might have actually been $2$ for the Psychology student sample and $3$ for the market research panel. Such a pattern could explain the differences in score reliability irrespective of differences in error score variance:
+\textbf{Limitations}
+Because score reliability is a ratio, its value is affected by differences in true score variance just as much as by differences in error score variance. Consider the following for our ability test example. Suppose we observe a Cronbach's alpha of .67 both for the student sample and the general population sample. 
 
-$$\rho_{xx'\ students} = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_E} = \frac{2}{2 + 1} = .67 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \rho_{xx'\ panel} = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_E} = \frac{3}{3 + 1} = .75$$ {#eq-RGMA1}
+$$\rho_{xx'\ students} = \frac{2}{2 + 1} = .67 \qquad \rho_{xx'\ general} = \frac{3}{3 + 1.5} = .67$$ {#eq-RGMA2}
 
-Alternatively, imagine that the error score variance for the online panel might have been 1.5 instead of 1. In that case, the following pattern would emerge:
+In this pattern, we observe identical score reliability and differences in true and error score variance. True and error score variance retain the same proportion in both samples. This means that the relative amount of measurement error in the observed scores is identical across both samples. This is the core mechanism, why the test can be used to differentiate equally well between different ability levels across both samples.
 
-$$\rho_{xx'\ students} = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_E} = \frac{2}{2 + 1} = .67 \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \rho_{xx'\ panel} = \frac{\sigma^2_T}{\sigma^2_T + \sigma^2_E} = \frac{3}{3 + 1.5} = .67$$ {#eq-RGMA2}
+If, on the other hand, the test was administered to both samples with the goal to differentiate ability levels between the two samples, measurement quality can no longer be viewed as equivalent between the populations. The differences in error score variance ($1$ in the student sample, $1.5$ in the general population) imply, that individual measurements made in the student sample are more precise than those in the general population. Therein, the test does not discriminate equally well between university students' ability levels as for the general population's ability levels. The question regarding the test's measurement quality shifted from a signal-to-noise ratio perspective, to a perspective where the absolute magnitude of measurement error needs to be evaluated.
 
-In this case, reliability coefficients would be have been identical across both samples, even though noise varied across samples.
+Consequently, Reliability Generalization Meta-Analysis answers a ratio-based question about measurement quality, not a question about differences in the absolute magnitude of measurement error.
 
-Both examples demonstrate that reliability coefficients are affected by differences in true score variance just as much as by differences in error score variance. They are a relative coefficients, informing us about the proportional amount of true score variance in the total variation. Only if we have reasons to assume that the true score variance should be identical across administrations, then we can interpret results of Reliability generalization meta-analysis as indicative of differences in measurement quality. Consequently, Reliability generalization meta-analysis answers a ratio-based question about measurement quality, a question on differences in the absolute extent of measurement error.
+
 
 ### Measurement invariance testing
 
@@ -478,7 +517,7 @@ The transformation of score variance (components) using the natural log not only
 
 $$ \hat{\mu}_{\sigma^2_e} = \exp\left(\hat{\mu}_{T[\sigma^2_e]} + \frac{1}{2} \hat{\tau}^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_mu}
 
-@eq-backtransf_mu demonstrates how the mean error score variance $\hat{\mu}_{\sigma^2_e}$ can be estimated from the meta-analytic estimates of $T[\sigma^2_e]$. Here, $\hat{\mu}_{T[\sigma^2_e]}$ represents the estimate of meta-analytic mean of log-transformed error score variance and $\hat{\tau}^2_{T[\sigma^2_e]}$ describes the estimate of its heterogeneity. Similarly, @eq-backtransf_var can be used to derive the heterogeneity of error score variance $\hat{\tau}^2_{\sigma^2_e}$ on its original scale, from the same meta-analytic estimates of $T[\sigma^2_e]\$\$.
+@eq-backtransf_mu demonstrates how the mean error score variance $\hat{\mu}_{\sigma^2_e}$ can be estimated from the meta-analytic estimates of $T[\sigma^2_e]$. Here, $\hat{\mu}_{T[\sigma^2_e]}$ represents the estimate of meta-analytic mean of log-transformed error score variance and $\hat{\tau}^2_{T[\sigma^2_e]}$ describes the estimate of its heterogeneity. Similarly, @eq-backtransf_var can be used to derive the heterogeneity of error score variance $\hat{\tau}^2_{\sigma^2_e}$ on its original scale, from the same meta-analytic estimates of \$T\[\sigma\^2_e\]\$\$.
 
 $$ \hat{\tau}^2_{\sigma^2_e} = \exp\left(\hat{\tau}^2_{T[\sigma^2_e]} - 1\right) \cdot \exp\left(2 \hat{\mu}_{T[\sigma^2_e]} + \hat{\tau}^2_{T[\sigma^2_e]}\right) $$ {#eq-backtransf_var}
 
