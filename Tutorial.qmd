@@ -67,7 +67,7 @@ Consider the following hypothetical for our depression screening example. Suppos
 
 $$\rho_{xx'\ Germany} = \frac{2}{2 + 1} = .67 \qquad \rho_{xx'\ Netherlands} = \frac{3}{3 + 1.5} = .67$$ {#eq-RGMA2}
 
-In this pattern, identical score reliability coexists with differences in true and error score variance. True and error score variance retain the same proportion in both groups. This means that the relative amount of measurement error in the observed scores is identical across both groups. This is the core mechanism, why the test can be used to differentiate equally well between different levels of the underlying construct within each of the groups.
+In this pattern, identical score reliability coexists with differences in true and error score variance. True and error score variance retain the same proportion in both groups. This means that the relative amount of measurement error in the observed scores is identical across both groups. This is the core mechanism, why the test can be used to differentiate equally well between different levels of the underlying construct within each of the groups. Although the German sample shows less error score variance in absolute terms, it also shows less true score variance. As the total score variance scales with the variance components, the share of observed differences that reflects genuine differences in depression is identical in both countries. Within each country, the measuring instrument therefore separates individuals with low and high levels of depressive symptoms equally well.
 
 If, on the other hand, the goal is to use the depression screening inventory for individual diagnosis, the context changes. For instance, we might be well aware what individual depression scores mean (e.g. Beck's depression inventory or else). In that case, we are not interested in the signal-to-noise ratio within each group. For a clinical diagnosis, it is no longer of interest, whether the test discriminates well between arbitrary, relative levels across members of the population. Instead, it is of interest, whether the individual score actually indicates the presence of a mental illness. Now what matters is not the signal-to-noise ratio within each group, but whether individual measurements carry the same degree of precision across groups.
 
@@ -93,7 +93,7 @@ The last level is of greatest relevance here. In classical test theory terms, re
 
 **What question does it answer?** Residual invariance testing addresses a *confirmatory, model-based* question: does the measurement model hold equivalently across groups, in the sense that item-level error variances are statistically indistinguishable?
 
-**When is this the right tool?** This approach is well suited when the primary goal is to verify that the statistical requirements for group comparison are met. A common example is cross-cultural research on a personality dimension and needing to establish that scale scores are genuinely comparable. It is particularly appropriate when working with a smaller, well-defined set of groups and when the question is fundamentally confirmatory, asking whether the model holds. We return to the example above (@eq-RGMA2), where score reliability coefficients were identical despite differing error score variances. For that example, we established that differences in ability may be meaningfully compared within groups, as we learned from Reliability Generalization Meta-Analysis. However, in order to ensure that ability levels may be compared across groups, we need to assess whether the absolute magnitude in error score variance is equivalent across groups. Residual invariance testing, given adequate power, would correctly flag the difference in error score variance that reliability coefficients would have missed.
+**When is this the right tool?** This approach is well suited when the primary goal is to verify that the statistical requirements for group comparison are met. In our depression screening example, this would be the case if scores from the German, Dutch and Polish versions are to be compared directly or evaluated against a common cut-off, which requires establishing that the instrument measures equivalently in all three countries. It is particularly appropriate when working with a smaller, well-defined set of groups and when the question is fundamentally confirmatory, asking whether the model holds. We return to the example above (@eq-RGMA2), where score reliability coefficients were identical despite differing error score variances. For that example, we established that differences in extent of depressive symptoms may be meaningfully compared within groups, as we learned from Reliability Generalization Meta-Analysis. However, assume that going beyond relative levels of symptoms, assume the test is used in the different countries to diagnose a depressive disorder (episode?). In such cases, individual measurements would be compared to a clinical cut-off for diagnosis. In order to ensure that the measurements lead to equally precise diagnoses across different countries, we need to assess whether the absolute magnitude in error score variance is equivalent across groups. Residual invariance testing, given adequate power, would correctly flag the difference in error score variance that reliability coefficients would have missed.
 
 **Limitations** Importantly, the test for residual invariance generates sensible results only if the previous levels of invariance are established [@meredith1993; @steenkamp1998; @vandeschoot2012]. If an earlier level could not be confirmed, for example, if scalar invariance does not hold, results from the test for residual invariance cannot be interpreted as evidence about differences in random measurement error, since the necessary preconditions for that interpretation are not met.
 
@@ -121,7 +121,7 @@ Returning to the example in @eq-RGMA2, where reliability coefficients were equal
 
 Because Boot-Err operates on error score variance directly, rather than reliability ratios, it is not confounded by differences in true score variance across groups. This independence from true score variance is what allows Boot-Err to detect the kind of asymmetry illustrated above, even when reliability coefficients alone would mask it. Unlike residual invariance testing, Boot-Err is designed for settings with many independent administrations and yields a single heterogeneity estimate with a formal test, rather than group-wise comparisons of residual variances.
 
-**Limitations** Boot-Err relies on several assumptions that should be made explicit. First, error score variance is derived from reliability estimates, which themselves depend on specific measurement models and assumptions such as unidimensionality and appropriate factor structure [@mcdonald1999; @raykov1997; @sijtsma2009]. Consequently, Boot-Err does not estimate a model-free estimate of random error, but rather the error variance implied by a given framework of reliability. Secondly, differences in estimated error variance may reflect not only changes in measurement precision but also differences in item covariance structure, dimensionality, or model misfit across contexts. Third, while Boot-Err quantifies heterogeneity in error variance, there are currently no established benchmarks for interpreting the practical magnitude of such heterogeneity, leaving substantive interpretation to domain-specific judgment. We do not attempt to provide practical benchmarks, as these are bound to be largely domain-specific. However, at the end of the following tutorial, we will discuss how researchers can explore the relevance of error score variance heterogeneity for their specific use case.
+**Limitations** Boot-Err relies on several assumptions that should be made explicit. First, error score variance is derived from reliability estimates, which themselves depend on specific measurement models and assumptions such as unidimensionality and appropriate factor structure [@mcdonald1999; @raykov1997; @sijtsma2009]. Consequently, Boot-Err does not estimate a model-free estimate of random error, but rather the error variance implied by a given framework of reliability. Secondly, differences in estimated error variance may reflect not only changes in measurement precision but also differences in item covariance structure, dimensionality, or model misfit across contexts. Third, while Boot-Err quantifies heterogeneity in error variance, there are currently no established benchmarks for interpreting the practical magnitude of such heterogeneity, leaving substantive interpretation to domain-specific judgement. We do not attempt to provide practical benchmarks, as these are bound to be largely domain-specific. However, at the end of the following tutorial, we will discuss how researchers can explore the relevance of error score variance heterogeneity for their specific use case.
 
 ### Summary and scope
 
@@ -155,7 +155,7 @@ Importantly, our interest lies not in the experimental manipulation itself, but 
 
 This tutorial provides a step-by-step guide on how to investigate differences in measurement quality across administrations using Boot-Err. All analyses are conducted in R. The tutorial includes executable chunks that can be run directly on the reader's own machine by copying the code into R. A quarto-file for this tutorial, containing text and the executable code chunks can alternatively be found on OSF (osf.io/fkhpc) and GitHub (github.com/lbeinhauer/tutorial-boot-err). No additional proprietary software or supplementary materials are required. The data used within this tutorial is publicly available on the OSF (osf.io/fwnc2). We make use of an R-package to download and read the data-set. The entire procedure can be reproduced using the code presented in this section.
 
-The tutorial is structured across several consecutive steps: (0) data preparation, (1) estimating score reliability, (2) estimating error score variance, (3) using bootstrapping to generate standard errors, (4) meta-analysis of error score variance, (5) backtransforming estimates, (bonus) relating error score variance to total score variance.
+The tutorial is structured across several consecutive steps: (1) estimating score reliability, (2) estimating error score variance, (3) using bootstrapping to generate standard errors, (4) meta-analysis of error score variance, (5) backtransforming estimates, (bonus) relating error score variance to total score variance. In the Appendix, step (0), we perform the data-cleaning procedure. Readers recreating the analyses while following this tutorial should run through step 0 before continuing below.
 
 At the end of this tutorial, readers will be able to
 
@@ -167,150 +167,12 @@ At the end of this tutorial, readers will be able to
 
 -   evaluate the magnitude of these differences in substantive terms
 
-### Step 0 - Preparing Data
-
-Before applying Boot-Err, the data must be prepared for analysis. Because data structures vary across projects, we walk through our own preparation here as a worked example. This procedure can be adapted to the requirements of the data at hand.
-
-The following code chunk manages the packages required for this tutorial. By executing the code below, the user checks whether the required packages magrittr [@bache2022], dplyr [@wickham2014], osfr [@wolen2020], here [@wickham2023], zip [@Csardi2025], data.table [@dowle2019], metafor [@viechtbauer2015], boot [@canty2017] are already installed. If the packages are not yet installed, they will be downloaded and installed from the default CRAN-repository. All required packages are subsequently loaded.
-
-```{r, output = F, warning = F}
-# relevant libraries required for this script
-packages <- c("magrittr", "dplyr", "osfr", "here", "zip", "data.table", "metafor", "boot")
-
-# check, whether library already installed or not - install and load as needed:
-apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
-  
-  # check if package is installed on system
-  pkg_avail <- nzchar(system.file(package = x))   
-  
-   # load the package, if already installed
-  if(pkg_avail){
-    require(x, character.only = TRUE)            
-    
-  # install the package, if missing
-  }else{
-    install.packages(x)      
-    
-    # load after installation
-    require(x, character.only = TRUE)             
-  }
-})
-```
-
-After loading the required packages, we can turn towards downloading the data-set from the OSF-repository. While the data cleaning and manipulation procedure is bound to be different for every research project, we briefly discuss how we come to a final data-set for this tutorial. Firstly, we download the zipped replication data-set from the openly available OSF-repository (osf.io/fwnc2), using the osfr R package. After unzipping, we can read the data-file in R.
-
-```{r, warning = F, eval = F}
-# create relevant directories, so data can be downloaded and stored
-dir.create(here("Data"), showWarnings = FALSE)
-dir.create(here("Data/Downloaded Data"), showWarnings = FALSE)
-
-
-# use osfr-package to download RRR10 data on the Mazar et al. / Srull et al. replications
-osfr::osf_retrieve_file("https://osf.io/fwnc2") %>% 
-  osfr::osf_download(path = here("Data/Downloaded Data/"), conflicts = "overwrite")
-# zip-file is stored at Downloaded Data
-
-# unzip the file and move it to the corresponding directory
-unzip(here("Data/Downloaded Data/Meta-Analysis_2018-07-09.zip"),
-      files = "Meta-Analysis/Results/raw_data_corrected_MAA.csv",
-      exdir = here("Data/Original Data/RRR10"),
-      junkpaths = T)
-```
-
-For the purpose of this tutorial, we want to restrict our analyses to only those participants, which were included in the replicators' primary analyses. Accordingly, we end up with 4,674 participants from 19 laboratories. We achieve this in substep *a)* by identifying the relevant laboratories from the published manuscript and filtering out all laboratories that do not belong to the primary replication.
-
-```{r, warning = F}
-# HEXACO Conscientiousness
-
-# a) Load data and select laboratories part of primary replication
-
-# Thankfully, for the RRR10 project, the data can be taken from a file directly, without the need of combination:
-pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/raw_data_corrected_MAA.csv")))
-
-# retain observations only for participants eligible for analysis
-pc_df <- pc_df[which(pc_df$inclusion == "inclusion both RRR" | pc_df$inclusion == "inclusion Mazar only"),] %>%
-  mutate(source = lab.name)
-
-# identify relevant labs for analysis
-labs_in_paper <- c("Laine", "klein Selle & Rozmann", "Aczel", "Ferreira-Santos", "Meijer", "Loschelder", "Wick", "Suchotzki", 
-                   "Sutan", "Vanpaemel", "Verschuere", "Wiggins", "Gonzalez-Iraizoz", "Koppel", "Birt", "McCarthy", "Evans", 
-                   "Holzmeister", "Ozdogru")
-labs_in_data <- unique(pc_df$source)
-labs_in_data[8] <- "Gonzalez-Iraizoz"
-labs_in_data[16] <- "Ozdogru"
-
-# remove labs from data, which we do not need for analysis
-labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
-pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
-```
-
-The data-set contains a large amount of information not required for this analysis. Therefore, in substep *b)*, we retain only those columns from the data-set that contain information about the participants' responses to the HEXACO-items and in which laboratory the participant was assessed. Since some of the HEXACO-items are reverse-coded, we need to re-code half of the items, so the scale is identical across all items.
-
-```{r, warning = F}
-# b) Select relevant variables and re-code items that are coded in the opposite direction
-
-# retain only those columns, which are related to the HEXACO-personality inventory
-# we can do so by only retaining columns, whose names start with "hex"
-# As we need to differentiate between scores from laboratories, we keep column "source"
-pc_df <- pc_df[,c(which(names(pc_df) %in% c("source")),
-                  grep("^hex", names(pc_df)))]
-
-# recoding the hexaco items that need recoding
-for(i in grep("^hex", names(pc_df))){
-  pc_df[,i] <- as.integer(pc_df[,i])
-}
-
-# these are the numbers of the items, that need recoding
-items_hex_recode <- c(30, 12, 60, 42, 24, 28, 53, 35, 41, 59, 28, 52, 10, 46, 9, 15, 57, 21, 26, 32, 14, 20, 44, 56, 1, 31, 49, 19, 55, 48)
-
-# combining "hex" and number gives the column names
-names_items_hex_recode <- paste0("hex", items_hex_recode) 
-
-# adding _R for names of items, that are recoded
-names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") 
-
-# replace the original (un-recoded) scores with the recoded ones
-pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] 
-```
-
-Lastly, in substep *c)*, we remove all columns that contain responses on the other HEXACO-dimensions, which are not Conscientiousness. As a result, we have constructed a data-set, containing the responses on Conscientiousness from all participants that are part of the primary replication sample in Verschuere et al. [-@RRRMazar].
-
-```{r, warning = FALSE}
-# c) select items belonging to Conscientiousness subscale
-
-# Conscientiousness
-# items in Conscientiousness subscale
-items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) 
-
-# did item need recoding?
-names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) 
-
-# retain only columns concerning Conscientiousness and source
-pc_df <- pc_df[,c(names_items_hex_CO, "source")]
-
-# identify individual laboratories
-labs <- unique(pc_df$source)
-```
-
-However, we find that some participants' responses on the Conscientiousness-items are missing in this data-set. While this was of no concern to the replication-authors, as the HEXACO-inventory served as a filler instrument, the same is not true for this tutorial. We will use Cronbach's alpha to estimate score reliability. Cronbach's alpha can not deal with missing responses. To keep it simple for this tutorial, we make use of list-wise deletion, where data for any participant with at least one missing item response is removed from the dataset. Alternative approaches attempting to impute the missing responses while retaining the general covariance-structure of the data-set are available. Great examples include Multiple Imputation [@schafer1999; @rubin2018] or Multivariate Imputation by Chained Equations [@vanbuuren2011]. Single value imputation methods like Mean or Mode Imputation restrict the data-set's covariance structure, leading to estimation issues and biases in subsequent analyses [@rubin2018].
-
-In the following code chunk, we compute how many scores are missing for each individual item. Subsequently, we retain only scores from participants, where no single item score for Conscientiousness is missing.
-
-```{r, warning = FALSE}
-# d) dealing with missing responses
-
-# compute number of missing values per item
-colSums(is.na(pc_df))
-
-# retain only complete observation sets
-pc_df <- na.omit(pc_df)
-```
-
-Finishing step 0, we have constructed a data-set, containing only the complete response sets of participants belonging to the replication authors' primary analysis sample. Subsequently, we can begin to follow the Boot-Err procedure.
 
 ### Step 1 - estimating score reliability
 
-The first step in the Boot-Err procedure aims to generate estimates of score reliability for each administration respectively. In the following code, we use *sapply()* to compute Cronbach's alpha separately for each laboratory in the data-set. Cronbach's alpha is generally defined as outlined in the following [@eq-alpha_formal; @cronbach1951].
+Assuming we start with a clean data-set, the first step in the Boot-Err procedure aims to generate estimates of score reliability for each administration respectively. In the following code, we use *sapply()* to compute Cronbach's alpha separately for each laboratory in the data-set. The HEXACO personality inventory is scored by computing the sum score for each personality dimension, including the Conscientiousness dimension [@lee2018]. This procedure implies that each item is weighed equally strong in the computation of the individual measured score. Cronbach's alpha is often criticised for imposing strict assumption on the data, that can not be met in real life data such as tau-equivalence. Accordingly, alternative measures such as McDonald's Omega [@mcdonald1999], Guttman's lambda 2 or 4 [@guttman1945] or the Greatest Lower Bound [@tenBerge2004] are recommeded as estimators of score reliability instead, as these relax such strict assumptions. However, summing or averaging item scores imposes an even stricter assumption of parallel measurements. As Cronbach's alpha imposes similarly strict assumptions on how the scores are generated, it can be considered a more justified choice for a score reliability estimator of HEXACO-Conscientiousness. 
+
+Cronbach's alpha is generally defined as outlined in the following [@eq-alpha_formal; @cronbach1951].
 
 $$\alpha=\frac{k^2\ \bar{\sigma}_{ij}}{\sigma^2_x}$$ {#eq-alpha_formal}
 
@@ -321,6 +183,31 @@ However, computing the average item covariance can be avoided, computing Cronbac
 $$\alpha = \frac{k}{k-1}\left(1-\frac{\sum_{i=1}^k\sigma^2_{i}}{\sum_{i=1}^k\sum_{j=1}^k\ \sigma_{ij}}\right) $$ {#eq-alpha_fast}
 
 Here, $\sigma^2_{i}$ describes the variance of scores on item $i$, while $\sigma_{ij}$ describes the covariance between items $i$ and $j$. @eq-alpha_fast generates the same estimate of Cronbach's alpha as in @eq-alpha_formal, but more easily implemented. Packages to compute Cronbach's alpha are available (e.g. psych, something else), but are more computationally demanding as several additional coefficients are returned. By using *sapply* to quickly compute across all laboratories, we can efficiently generate a vector containing estimates of Cronbach's alpha for each administration respectively.
+
+```{r, include = F}
+# relevant libraries required for this script
+packages <- c("here")
+
+# check, whether library already installed or not - install and load as needed:
+apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
+  
+  # check if package is installed on system
+  pkg_avail <- nzchar(system.file(package = x))   
+  
+  # load the package, if already installed
+  if(pkg_avail){
+    require(x, character.only = TRUE)            
+    
+    # install the package, if missing
+  }else{
+    install.packages(x)      
+    
+    # load after installation
+    require(x, character.only = TRUE)             
+  }
+})
+source(here("step_0_data_prep.R"))
+```
 
 ```{r, warning = F}
 # compute Cronbach's alpha across all administrations
@@ -486,7 +373,7 @@ Concluding step 3, we have gathered all estimates we need, to perform a random-e
 
 ### Step 4 - meta-analysis of error score variance
 
-For this step, we estimate the heterogeneity of log-transformed error score variance and test whether it can be statistically distinguished from zero. We use the R-package *metafor*, as it provides an efficient and easy-to-use implementation of random-effects meta-analyses for any parameter [@metafor]. Using the *rma*-function with the argument *method = "REML"* ensures that we use the REML-estimator of heterogeneity. Hönekopp and Linden [-@hoenekopp2022] have shown that the REML-estimator tends to outperform other estimators across a wide range of conditions.
+In this step, we estimate the heterogeneity of log-transformed error score variance and test whether it can be statistically distinguished from zero. We use the R-package *metafor*, as it provides an efficient and easy-to-use implementation of random-effects meta-analyses for any parameter [@metafor]. Using the *rma*-function with the argument *method = "REML"* ensures that we use the REML-estimator of heterogeneity. Hönekopp and Linden [-@hoenekopp2022] have shown that the REML-estimator tends to outperform other estimators across a wide range of conditions.
 
 The following chunk will run a random-effects meta-analysis in *metafor*, generating an estimate of the meta-analytic mean (in the output `estimate`), estimates of absolute heterogeneity in standard deviation and variance (in the output `tau` and `tau^2`) and estimates of relative heterogeneity in the form of $I^2$ and $H^2$ (in the output `I^2` and `H^2`). Additionally, *metafor* provides the results for two hypothesis tests. Firstly, the test for heterogeneity (`Test for Heterogeneity` in the output), assessing whether the estimate of heterogeneity $\tau^2$ can be statistically distinguished from $0$. Secondly, the test for the meta-analytic effect size, assessing whether the meta-analytic aggregate can be statistically distinguished from $0$ (in the Output `Model results`).
 
@@ -502,7 +389,7 @@ ln_var_E_rma
 
 The significance tests indicate two things for the log-transformed error score variance of Conscientiousness across replications in Verschuere et al. [-@RRRMazar]: Firstly, we find that the meta-analytic estimate of `r paste0("$\\mu_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$b[1], 3), "$")` is significantly different from zero (`r paste0("$z = ", round(ln_var_E_rma$zval, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$pval < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$pval, 3))), "$")`), using a significance level of 5%. However, this information is not particularly meaningful, the estimate is on the log-transformed scale and interpretation is not straightforward. Secondly and of greater relevance here, we find that the test for heterogeneity indicates that there is statistically significant heterogeneity in log-transformed error score variances (`r paste0("$Q(", ln_var_E_rma$k - 1, ") = ", round(ln_var_E_rma$QE, 3), "$")`, `r paste0("$p ", ifelse(ln_var_E_rma$QEp < .001, yes = paste0('< .001'), no = paste0('= ', round(ln_var_E_rma$QEp, 3))), "$")`). Even though the tested estimates are still on the log-scale, we can nonetheless infer from this result, that error score variance $\sigma^2_E$ is not identical across all administrations of the Conscientiousness-scale.
 
-However, the estimate of `r paste0("$\\tau^2_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$tau2, 3), "$")` can not be easily interpreted due to the log-transformation. Instead, the estimates of relative heterogeneity may be interpreted despite the transformation. The estimate of `r paste0("$I^2 = ", round(ln_var_E_rma$I2, 2), "$")` implies that `r round(ln_var_E_rma$I2, 2)`% of the variance observed in the estimate of error score variance are due to actual heterogeneity in the population, not due to sampling error. Similarly, the estimate of `r paste0("$H^2 = ", round(ln_var_E_rma$H2, 2), "$")` implies that the heterogeneity is `r round(ln_var_E_rma$H2, 2)` times as large as the variance induced by sampling error. According to standard conventions [@higgins2002], both estimates imply a strong or large extent of heterogeneity. However, both estimates of relative heterogeneity are often criticized, as they depend strongly on sample size and are easily manipulated [@borenstein2017].
+However, the estimate of `r paste0("$\\tau^2_{T[\\hat{\\sigma}^2_e]} = ", round(ln_var_E_rma$tau2, 3), "$")` can not be easily interpreted due to the log-transformation. The relative heterogeneity estimates of $I^2$ and $H^2$ do not depend on the scale of the effect in the same way, since they express heterogeneity relative to sampling variance. Note however, that they still refer to the log-transformed estimates. `r paste0("$I^2 = ", round(ln_var_E_rma$I2, 2), "$")` implies that `r round(ln_var_E_rma$I2, 2)`% of the variance observed in log error score variance is due to actual heterogeneity in the population, not due to sampling error. Similarly, the estimate of `r paste0("$H^2 = ", round(ln_var_E_rma$H2, 2), "$")` implies that the heterogeneity is `r round(ln_var_E_rma$H2, 2)` times as large as the variance induced by sampling error. According to standard conventions [@higgins2002], both estimates imply a strong or large extent of heterogeneity. However, both estimates of relative heterogeneity are often criticized, as they depend strongly on sample size and are easily manipulated [@borenstein2017].
 
 Instead, we should turn towards an informative interpretation of the absolute heterogeneity in terms of $\tau^2$ or $\tau$. To do so, we need to back-transform our newly generated estimates to the original scale. We do so in Step 5.
 
@@ -631,19 +518,19 @@ Boot-Err essentially consists of 5 steps, where we estimate score reliability (s
 
 Having worked through these steps, readers are now equipped to estimate error score variance for each administration, approximate its sampling variability using bootstrapping, test whether error score variance differs significantly across administrations, and evaluate the magnitude of those differences in substantive terms, corresponding to the four learning objectives set out at the start of the tutorial.
 
-Making use of the data supplied by Verschuere et al. [-@RRRMazar], we used Boot-Err to understand to what extent there are differences in absolute measurement precision across 19 laboratories where the HEXACO-Conscientiousness personality scale was administered. We not only find statistically significant differences in error score variance, but were also able to estimate the absolute and relative extent of these differences. Consequently, the evidence strongly suggests that the random measurement error in the Conscientiousness scores is not constant across samples. We find that the heterogeneity of `{r} round(backtransform_var_tau2(ln_var_E_rma), 3)` is about `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance. Across administrations of the same scale, we can expect error score variance to vary at least between `r round(exp(ln_var_E_rma$b[1] - sqrt(ln_var_E_rma$tau2)), 3)` and `r round(exp(ln_var_E_rma$b[1] + sqrt(ln_var_E_rma$tau2)), 3)`.
+Making use of the data supplied by Verschuere et al. [-@RRRMazar], we used Boot-Err to understand to what extent there are differences in absolute measurement precision across 19 laboratories where the HEXACO-Conscientiousness personality scale was administered. We not only find statistically significant differences in error score variance, but were also able to estimate the absolute and relative extent of these differences. Consequently, the evidence strongly suggests that the random measurement error in the Conscientiousness scores is not constant across samples. We find that the heterogeneity is about `{r} round((backtransform_var_tau2(ln_var_E_rma) %>% sqrt(.))/backtransform_var_mu(ln_var_E_rma), 3) * 100`% of the mean error score variance. Across administrations of the same scale, we can expect error score variance to vary at least between `r round(exp(ln_var_E_rma$b[1] - sqrt(ln_var_E_rma$tau2)), 3)` and `r round(exp(ln_var_E_rma$b[1] + sqrt(ln_var_E_rma$tau2)), 3)`.
 
 In order to better understand what these differences mean, we additionally uncovered to what extent the heterogeneity in total score variance can be attributed to these differences in measurement error. Here, we found that the overwhelming majority of heterogeneity, `{r} round((1 - (backtransform_var_tau2(ln_var_E_rma)) / (backtransform_var_tau2(ln_var_X_rma))), 3) * 100`%, can not be explained by differences in measurement error. For the Conscientiousness-scale, this implies that, while there clearly are substantial differences in measurement error across groups, the distribution of true scores varies much more strongly across groups. Accordingly, differences in total score variance can not be attributed to differences in measurement error. Instead, Conscientiousness is dispersed highly differently across those groups. In Beinhauer et al. [-@beinhauer2026] we discuss potential causes and implications of this phenomenon.
 
 ## Discussion
 
-Measurement precision and how strongly it diverges across administrations of the same instrument is a central question in social and behavioural sciences [e.g.; @shaw2020; @garcía2022; @botella2010]. Differences in random measurement error are not only interesting to researchers assessing the quality of a measuring instrument, but these differences also have clear implications concerning hypothesis testing and standardization of effect sizes [e.g.; @olsson-collentine2020; @wiernik2020].
+Measurement precision and how strongly it diverges across administrations of the same instrument is a central question in social and behavioural sciences [e.g. @shaw2020; @garcía2022; @botella2010]. Differences in random measurement error are not only interesting to researchers assessing the quality of a measuring instrument, but these differences also have clear implications concerning hypothesis testing and standardization of effect sizes [e.g. @olsson-collentine2020; @wiernik2020].
 
 The three methods discussed in this text each address this concern from a distinct angle. As summarised in Table @tbl-summary, these three methods are complements rather than competitors, as each answers a distinct question, and the choice should be driven by the research goal, not convention.
 
 In the tutorial-section, we have demonstrated how Boot-Err can be applied in practice using the HEXACO-Conscientiousness scale across 19 laboratories. We found statistically significant heterogeneity in error score variance, and were able to estimate both its absolute magnitude and its contribution to total score variance heterogeneity. Importantly, the Bonus-Step revealed that the overwhelming majority of heterogeneity in total score variance could not be attributed to differences in measurement error. Instead, differences in true score variance were the dominant source of variation. This finding illustrates a broader point, as heterogeneity in observed score variance is frequently and perhaps reflexively attributed to measurement imprecision, when in fact differences in the construct itself across groups may be the more substantive explanation. Boot-Err makes it possible to formally distinguish between these two sources rather than assuming one.
 
-Like any statistical method, Boot-Err rests on assumptions that should be made explicit. Total and error score variance should follow a log-normal distribution, and administrations should be independent rather than nested. Additionally, a number of assumptions relate to the choice of the reliability estimator. Here, we made use of Cronbach's alpha, which typically comes with assumptions of essential tau-equivalence and unidimensionality [@cronbach1951]. While these assumptions are widely criticized and rarely hold up in real data [@sijtsma2009; @mcneish2018; @mcdonald1999], we need to remind ourselves that these assumptions also relate to typical scoring methods of these measuring instruments. The HEXACO-personality score for each dimension is computed by taking the average of the relevant item scores [@lee2018]. Therefore, even stricter assumptions going beyond tau-equivalence and unidimensionality apply to the scoring mechanisms. Because the HEXACO-personality inventpry makes use of sum/average scoring, the tau-equivalence assumption is already embedded in the scoring procedure itself. Using a reliability estimator that imposes weaker assumptions would give a score reliability estimate inconsistent with how the scale is actually scored.
+Like any statistical method, Boot-Err rests on assumptions that should be made explicit. Total and error score variance should follow a log-normal distribution, and administrations should be independent rather than nested. Additionally, a number of assumptions relate to the choice of the reliability estimator. Here, we made use of Cronbach's alpha, which typically comes with assumptions of essential tau-equivalence and unidimensionality [@cronbach1951]. While these assumptions are widely criticized and rarely hold up in real data [@sijtsma2009; @mcneish2018; @mcdonald1999], we need to be aware that these assumptions also relate to typical scoring methods of these measuring instruments. The HEXACO-personality score for each dimension is computed by taking the average of the relevant item scores [@lee2018]. Therefore, even stricter assumptions going beyond tau-equivalence and unidimensionality apply to the scoring mechanisms. Because the HEXACO-personality inventory makes use of sum/average scoring, the tau-equivalence assumption is already embedded in the scoring procedure itself. Using a reliability estimator that imposes weaker assumptions would give a score reliability estimate inconsistent with how the scale is actually scored.
 
 We hope this tutorial lowers the barrier for researchers who wish to go beyond asking *whether* measurement quality differs across contexts and begin asking *how much* it differs. The increasing prevalence of large-scale collaborative projects means that data well-suited for Boot-Err analyses are becoming less of an exception. Beyond measurement quality itself, future applications could use Boot-Err to examine whether heterogeneity in error score variance systematically covaries with study-level moderators, such as sample characteristics, administration mode or cultural context. More broadly, we encourage researchers to treat measurement error not as a fixed property of a scale, but as a quantity that varies, can be estimated, and deserves as much attention as the constructs being measured.
 
@@ -651,3 +538,146 @@ We hope this tutorial lowers the barrier for researchers who wish to go beyond a
 
 ::: {#refs}
 :::
+
+## Appendix
+
+### Step 0 - Preparing Data
+
+Before applying Boot-Err, the data must be prepared for analysis. Because data structures vary across projects, we walk through our own preparation here as a worked example. This procedure can be adapted to the requirements of the data at hand.
+
+The following code chunk manages the packages required for this tutorial. By executing the code below, the user checks whether the required packages magrittr [@bache2022], dplyr [@wickham2014], osfr [@wolen2020], here [@wickham2023], zip [@Csardi2025], data.table [@dowle2019], metafor [@viechtbauer2015], boot [@canty2017] are already installed. If the packages are not yet installed, they will be downloaded and installed from the default CRAN-repository. All required packages are subsequently loaded.
+
+```{r, output = F, warning = F, eval = F}
+# relevant libraries required for this script
+packages <- c("magrittr", "dplyr", "osfr", "here", "zip", "data.table", "metafor", "boot")
+
+# check, whether library already installed or not - install and load as needed:
+apply(as.matrix(packages), MARGIN = 1, FUN = function(x) {
+  
+  # check if package is installed on system
+  pkg_avail <- nzchar(system.file(package = x))   
+  
+   # load the package, if already installed
+  if(pkg_avail){
+    require(x, character.only = TRUE)            
+    
+  # install the package, if missing
+  }else{
+    install.packages(x)      
+    
+    # load after installation
+    require(x, character.only = TRUE)             
+  }
+})
+```
+
+After loading the required packages, we can turn towards downloading the data-set from the OSF-repository. While the data cleaning and manipulation procedure is bound to be different for every research project, we briefly discuss how we come to a final data-set for this tutorial. Firstly, we download the zipped replication data-set from the openly available OSF-repository (osf.io/fwnc2), using the osfr R package. After unzipping, we can read the data-file in R.
+
+```{r, warning = F, eval = F}
+# create relevant directories, so data can be downloaded and stored
+dir.create(here("Data"), showWarnings = FALSE)
+dir.create(here("Data/Downloaded Data"), showWarnings = FALSE)
+
+
+# use osfr-package to download RRR10 data on the Mazar et al. / Srull et al. replications
+osfr::osf_retrieve_file("https://osf.io/fwnc2") %>% 
+  osfr::osf_download(path = here("Data/Downloaded Data/"), conflicts = "overwrite")
+# zip-file is stored at Downloaded Data
+
+# unzip the file and move it to the corresponding directory
+unzip(here("Data/Downloaded Data/Meta-Analysis_2018-07-09.zip"),
+      files = "Meta-Analysis/Results/raw_data_corrected_MAA.csv",
+      exdir = here("Data/Original Data/RRR10"),
+      junkpaths = T)
+```
+
+For the purpose of this tutorial, we want to restrict our analyses to only those participants, which were included in the replicators' primary analyses. Accordingly, we end up with 4,674 participants from 19 laboratories. We achieve this in substep *a)* by identifying the relevant laboratories from the published manuscript and filtering out all laboratories that do not belong to the primary replication.
+
+```{r, warning = F, eval = F}
+# HEXACO Conscientiousness
+
+# a) Load data and select laboratories part of primary replication
+
+# Thankfully, for the RRR10 project, the data can be taken from a file directly, without the need of combination:
+pc_df <- as.data.frame(fread(here("Data/Original Data/RRR10/raw_data_corrected_MAA.csv")))
+
+# retain observations only for participants eligible for analysis
+pc_df <- pc_df[which(pc_df$inclusion == "inclusion both RRR" | pc_df$inclusion == "inclusion Mazar only"),] %>%
+  mutate(source = lab.name)
+
+# identify relevant labs for analysis
+labs_in_paper <- c("Laine", "klein Selle & Rozmann", "Aczel", "Ferreira-Santos", "Meijer", "Loschelder", "Wick", "Suchotzki", 
+                   "Sutan", "Vanpaemel", "Verschuere", "Wiggins", "Gonzalez-Iraizoz", "Koppel", "Birt", "McCarthy", "Evans", 
+                   "Holzmeister", "Ozdogru")
+labs_in_data <- unique(pc_df$source)
+labs_in_data[8] <- "Gonzalez-Iraizoz"
+labs_in_data[16] <- "Ozdogru"
+
+# remove labs from data, which we do not need for analysis
+labs_excl <- labs_in_data[!labs_in_data %in% labs_in_paper]
+pc_df <- pc_df[which(!pc_df$source %in% labs_excl),]
+```
+
+The data-set contains a large amount of information not required for this analysis. Therefore, in substep *b)*, we retain only those columns from the data-set that contain information about the participants' responses to the HEXACO-items and in which laboratory the participant was assessed. Since some of the HEXACO-items are reverse-coded, we need to re-code half of the items, so the scale is identical across all items.
+
+```{r, warning = F, eval = F}
+# b) Select relevant variables and re-code items that are coded in the opposite direction
+
+# retain only those columns, which are related to the HEXACO-personality inventory
+# we can do so by only retaining columns, whose names start with "hex"
+# As we need to differentiate between scores from laboratories, we keep column "source"
+pc_df <- pc_df[,c(which(names(pc_df) %in% c("source")),
+                  grep("^hex", names(pc_df)))]
+
+# recoding the hexaco items that need recoding
+for(i in grep("^hex", names(pc_df))){
+  pc_df[,i] <- as.integer(pc_df[,i])
+}
+
+# these are the numbers of the items, that need recoding
+items_hex_recode <- c(30, 12, 60, 42, 24, 28, 53, 35, 41, 59, 28, 52, 10, 46, 9, 15, 57, 21, 26, 32, 14, 20, 44, 56, 1, 31, 49, 19, 55, 48)
+
+# combining "hex" and number gives the column names
+names_items_hex_recode <- paste0("hex", items_hex_recode) 
+
+# adding _R for names of items, that are recoded
+names_items_hex_recode_R <- paste0(names_items_hex_recode, "_R") 
+
+# replace the original (un-recoded) scores with the recoded ones
+pc_df[,names_items_hex_recode_R] <- 6 - pc_df[,names_items_hex_recode] 
+```
+
+Lastly, in substep *c)*, we remove all columns that contain responses on the other HEXACO-dimensions, which are not Conscientiousness. As a result, we have constructed a data-set, containing the responses on Conscientiousness from all participants that are part of the primary replication sample in Verschuere et al. [-@RRRMazar].
+
+```{r, warning = FALSE, eval = F}
+# c) select items belonging to Conscientiousness subscale
+
+# Conscientiousness
+# items in Conscientiousness subscale
+items_hex_CO <- c(2, 26, 8, 32, 14, 38, 50, 20, 44, 56) 
+
+# did item need recoding?
+names_items_hex_CO <- ifelse(items_hex_CO %in% items_hex_recode, paste0("hex", items_hex_CO, "_R"), paste0("hex",items_hex_CO)) 
+
+# retain only columns concerning Conscientiousness and source
+pc_df <- pc_df[,c(names_items_hex_CO, "source")]
+
+# identify individual laboratories
+labs <- unique(pc_df$source)
+```
+
+However, we find that some participants' responses on the Conscientiousness-items are missing in this data-set. While this was of no concern to the replication-authors, as the HEXACO-inventory served as a filler instrument, the same is not true for this tutorial. We will use Cronbach's alpha to estimate score reliability. Cronbach's alpha can not deal with missing responses. To keep it simple for this tutorial, we make use of list-wise deletion, where data for any participant with at least one missing item response is removed from the dataset. Alternative approaches attempting to impute the missing responses while retaining the general covariance-structure of the data-set are available. Great examples include Multiple Imputation [@schafer1999; @rubin2018] or Multivariate Imputation by Chained Equations [@vanbuuren2011]. Single value imputation methods like Mean or Mode Imputation restrict the data-set's covariance structure, leading to estimation issues and biases in subsequent analyses [@rubin2018].
+
+In the following code chunk, we compute how many scores are missing for each individual item. Subsequently, we retain only scores from participants, where no single item score for Conscientiousness is missing.
+
+```{r, warning = FALSE, eval = F}
+# d) dealing with missing responses
+
+# compute number of missing values per item
+colSums(is.na(pc_df))
+
+# retain only complete observation sets
+pc_df <- na.omit(pc_df)
+```
+
+Finishing step 0, we have constructed a data-set, containing only the complete response sets of participants belonging to the replication authors' primary analysis sample. Subsequently, we can begin to follow the Boot-Err procedure.
